@@ -1,5 +1,7 @@
-import { BeforeSave, Column, Model, Table } from 'sequelize-typescript';
+import { BeforeSave, BelongsToMany, Column, Model, Table } from 'sequelize-typescript';
 import * as bcrypt from 'bcrypt';
+import { Role } from './role.model';
+import { UserRole } from './user-role.model';
 
 const hashPassword = async (password) => {
     if (!password) {
@@ -16,6 +18,9 @@ export class User extends Model<User> {
 
     @Column
     password: string
+
+    @BelongsToMany(() => Role, () => UserRole)
+    roles: Role[]
 
     @BeforeSave
     static async updatePassword(model: User) {

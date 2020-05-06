@@ -6,6 +6,11 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from './models/user.model';
 import { UsersModule } from './users/users.module';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './auth/roles.guard';
+import { Role } from './models/role.model';
+import { UserRole } from './models/user-role.model';
+import { TeachersModule } from './teachers/teachers.module';
 
 @Module({
   imports: [
@@ -21,13 +26,20 @@ import { UsersModule } from './users/users.module';
               username: configService.get<string>('DB_USER'),
               password: configService.get<string>('DB_PASSWORD'),
               database: configService.get<string>('DB_DATABASE'),
-              models: [User],
+              models: [User, Role, UserRole],
               synchronize: true
           })
       }),
-      UsersModule
+      UsersModule,
+      TeachersModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+      AppService,
+      {
+          provide: APP_GUARD,
+          useClass: RolesGuard,
+      }
+  ],
 })
 export class AppModule {}

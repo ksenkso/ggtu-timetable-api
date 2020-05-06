@@ -24,4 +24,8 @@ export class UsersService {
         });
         return user.save();
     }
+
+    async delete(username: string): Promise<number> {
+        return this.users.destroy({where: {username}});
+    }
 }
