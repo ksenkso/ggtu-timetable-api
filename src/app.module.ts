@@ -4,13 +4,15 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { User } from './models/user.model';
 import { UsersModule } from './users/users.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './auth/roles.guard';
-import { Role } from './models/role.model';
-import { UserRole } from './models/user-role.model';
 import { TeachersModule } from './teachers/teachers.module';
+import { LessonsModule } from './lessons/lessons.module';
+import { GroupsModule } from './groups/groups.module';
+import { CabinetsModule } from './cabinets/cabinets.module';
+import { BuildingsModule } from './buildings/buildings.module';
+import { TimetableModule } from './timetable/timetable.module';
 
 @Module({
   imports: [
@@ -26,12 +28,17 @@ import { TeachersModule } from './teachers/teachers.module';
               username: configService.get<string>('DB_USER'),
               password: configService.get<string>('DB_PASSWORD'),
               database: configService.get<string>('DB_DATABASE'),
-              models: [User, Role, UserRole],
+              autoLoadModels: true,
               synchronize: true
           })
       }),
       UsersModule,
-      TeachersModule
+      TeachersModule,
+      LessonsModule,
+      GroupsModule,
+      CabinetsModule,
+      BuildingsModule,
+      TimetableModule
   ],
   controllers: [AppController],
   providers: [
