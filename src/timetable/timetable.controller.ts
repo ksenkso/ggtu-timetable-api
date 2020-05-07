@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { TimetablesService } from './timetable.service';
-import { Day, TimetableEntry, TimetableEntryType } from '../models/timetable-entry.model';
+import { Day, TimetableEntry, TimetableEntryType, Week } from '../models/timetable-entry.model';
 
 @Controller('api/timetable')
 export class TimetableController {
@@ -22,8 +22,10 @@ export class TimetableController {
     addTimetableEntry(
         @Body('lessonId') lessonId: number,
         @Body('cabinetId') cabinetId: number,
+        @Body('groupId') groupId: number,
         @Body('teacherIds') teacherIds: number[],
         @Body('day') day: Day,
+        @Body('week') week: Week,
         @Body('index') index: number,
         @Body('type') type: TimetableEntryType,
     ) {
@@ -31,7 +33,9 @@ export class TimetableController {
             lessonId,
             cabinetId,
             teacherIds,
+            groupId,
             day,
+            week,
             index,
             type,
         });
@@ -42,8 +46,10 @@ export class TimetableController {
         @Param('id') id: number,
         @Body('lessonId') lessonId: number,
         @Body('cabinetId') cabinetId: number,
+        @Body('groupId') groupId: number,
         @Body('teacherIds') teacherIds: number[],
         @Body('day') day: Day,
+        @Body('week') week: Week,
         @Body('index') index: number,
         @Body('type') type: TimetableEntryType,
     ) {
@@ -51,7 +57,9 @@ export class TimetableController {
             lessonId,
             cabinetId,
             teacherIds,
+            groupId,
             day,
+            week,
             index,
             type,
         });
@@ -60,5 +68,12 @@ export class TimetableController {
     @Delete(':id')
     deleteTimetableEntry(@Param('id') id: number) {
         return this.timetableService.delete(id);
+    }
+
+    @Get('group/:groupId/')
+    async getGroupTimetable(
+      @Param('groupId') groupId: number
+    ) {
+        return this.timetableService.forGroup(groupId);
     }
 }

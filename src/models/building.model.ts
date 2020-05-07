@@ -1,11 +1,11 @@
 import { Column, HasMany, Model, Table } from 'sequelize-typescript';
 import { Cabinet } from './cabinet.model';
 
-@Table
+@Table({ timestamps: false })
 export class Building extends Model<Building> {
-    @Column
-    name: string;
+  @Column
+  name: string;
 
-    @HasMany(() => Cabinet)
-    cabinets: Cabinet[];
+  @HasMany(() => Cabinet)
+  cabinets: Cabinet[];
 }

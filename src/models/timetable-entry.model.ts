@@ -3,43 +3,67 @@ import { Lesson } from './lesson.model';
 import { Teacher } from './teacher.model';
 import { Cabinet } from './cabinet.model';
 import { TeacherTimetable } from './teacher-timetable.model';
+import { Group } from './group.model';
+
+export enum Week {
+  Top,
+  Bottom,
+}
+
 export enum TimetableEntryType {
-    Lecture,
-    Practice,
-    Lab,
+  Lecture,
+  Practice,
+  Lab,
 }
 
 export enum Day {
-    Monday,
-    Tuesday,
-    Wednesday,
-    Thursday,
-    Friday,
-    Saturday,
+  Monday,
+  Tuesday,
+  Wednesday,
+  Thursday,
+  Friday,
+  Saturday,
 }
-@Table({tableName: 'timetable_entry'})
+
+@Table({
+  tableName: 'timetable_entry',
+  timestamps: false,
+})
 export class TimetableEntry extends Model<TimetableEntry> {
 
-    @Column
-    day: Day;
+  @Column
+  day: Day;
 
-    @Column
-    index: number;
+  @Column
+  week: Week;
 
-    @Column
-    type: TimetableEntryType
+  @Column
+  index: number;
 
-    @ForeignKey(() => Lesson)
-    @Column
-    lessonId: number;
+  @Column
+  type: TimetableEntryType;
 
-    @ForeignKey(() => Cabinet)
-    @Column
-    cabinetId: number;
+  @ForeignKey(() => Lesson)
+  @Column
+  lessonId: number;
 
-    @BelongsTo(() => Lesson)
-    lesson: Lesson;
+  @ForeignKey(() => Cabinet)
+  @Column
+  cabinetId: number;
 
-    @BelongsToMany(() => Teacher, () => TeacherTimetable)
-    teachers: Teacher[]
+  @ForeignKey(() => Group)
+  @Column
+  groupId: number;
+
+  @BelongsTo(() => Cabinet)
+  cabinet: Cabinet;
+
+  @BelongsTo(() => Lesson)
+  lesson: Lesson;
+
+  @BelongsToMany(() => Teacher, () => TeacherTimetable)
+  teachers: Teacher[];
+
+  @BelongsTo(() => Group)
+  group: Group;
 }

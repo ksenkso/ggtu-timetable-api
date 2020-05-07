@@ -1,7 +1,11 @@
-import { Column, Model, Table } from 'sequelize-typescript';
+import { Column, HasMany, Model, Table } from 'sequelize-typescript';
+import { TimetableEntry } from './timetable-entry.model';
 
-@Table
+@Table({ timestamps: false })
 export class Group extends Model<Group> {
-    @Column
-    name: string;
+  @Column
+  name: string;
+
+  @HasMany(() => TimetableEntry)
+  entries: TimetableEntry;
 }
