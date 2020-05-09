@@ -1,13 +1,31 @@
-import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/sequelize";
-import { TimetableEntry, Week } from "../models/timetable-entry.model";
-import { CreateTimetableEntryDto } from "./dto/create-timetable-entry.dto";
-import { UpdateTimetableEntryDto } from "./dto/update-timetable-entry.dto";
-import { TeacherTimetable } from "../models/teacher-timetable.model";
-import { Teacher } from "../models/teacher.model";
-import { FindOptions } from "sequelize";
-import { Lesson } from "../models/lesson.model";
-import { Cabinet } from "../models/cabinet.model";
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
+import { TimetableEntry, Week } from '../models/timetable-entry.model';
+import { CreateTimetableEntryDto } from './dto/create-timetable-entry.dto';
+import { UpdateTimetableEntryDto } from './dto/update-timetable-entry.dto';
+import { TeacherTimetable } from '../models/teacher-timetable.model';
+import { Teacher } from '../models/teacher.model';
+import { FindOptions } from 'sequelize';
+import { Lesson } from '../models/lesson.model';
+import { Cabinet } from '../models/cabinet.model';
+
+type EntryPropId = 'lessonId' | 'groupId' | 'cabinetId';
+
+const defaultRels = [
+  { model: Teacher, through: { attributes: [] } },
+  { model: Lesson },
+  { model: Cabinet },
+];
+
+export class TimetableQuery {
+  where?: {
+    groupId?: number;
+    teacherId?: number;
+    cabinetId?: number;
+    lessonId?: number;
+  };
+  include: string[];
+}
 
 @Injectable()
 export class TimetablesService {
@@ -22,21 +40,13 @@ export class TimetablesService {
 
   findAll(): Promise<TimetableEntry[]> {
     return this.entries.findAll({
-      include: [
-        { model: Teacher, through: { attributes: [] } },
-        { model: Lesson },
-        { model: Cabinet },
-      ],
+      include: defaultRels,
     }).all();
   }
 
   async findOne(id: number) {
     return this.entries.findByPk(id, {
-      include: [
-        { model: Teacher, through: { attributes: [] } },
-        { model: Lesson },
-        { model: Cabinet },
-      ],
+      include: defaultRels,
     });
   }
 
@@ -49,11 +59,7 @@ export class TimetablesService {
       timetableEntryId: entry.id,
     })));
     return this.entries.findByPk(entry.id, {
-      include: [
-        { model: Teacher, through: { attributes: [] } },
-        { model: Lesson },
-        { model: Cabinet },
-      ],
+      include: defaultRels,
     });
   }
 
@@ -72,27 +78,41 @@ export class TimetablesService {
     delete data.teacherIds;
     await this.entries.update(data, { where: { id } });
     return this.entries.findByPk(id, {
-      include: [
-        { model: Teacher, through: { attributes: [] } },
-        { model: Lesson },
-        { model: Cabinet },
-      ],
+      include: defaultRels,
     });
   }
 
-  async forGroup(groupId: number, week?: number): Promise<TimetableEntry[]> {
+  async forTeacher(teacherId: number, week?: Week): Promise<TimetableEntry[]> {
     const options: FindOptions = {
-      where: {
-        groupId,
-      },
       include: [
-        { model: Teacher, through: { attributes: [] } },
+        { model: Teacher, through: { attributes: [], where: { teacherId } } },
         { model: Lesson },
         { model: Cabinet },
       ],
+      where: {},
     };
     if (week === Week.Top || week === Week.Bottom) {
-      options.where["week"] = week;
+      options.where['week'] = week;
+    }
+    const entries = await this.entries.findAll(options);
+    return Promise.all(entries.map(entry => {
+      return entry.$get('teachers')
+        .then(teachers => {
+          entry.set('teachers', teachers);
+          return entry;
+        });
+    }));
+  }
+
+  async forEntryPropId(key: EntryPropId, id: number, week?: Week): Promise<TimetableEntry[]> {
+    const options: FindOptions = {
+      where: {
+        [key]: id,
+      },
+      include: defaultRels,
+    };
+    if (week === Week.Top || week === Week.Bottom) {
+      options.where['week'] = week;
     }
     return this.entries.findAll(options);
   }
