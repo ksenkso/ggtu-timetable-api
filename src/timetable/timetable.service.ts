@@ -9,9 +9,9 @@ import { FindOptions } from 'sequelize';
 import { Lesson } from '../models/lesson.model';
 import { Cabinet } from '../models/cabinet.model';
 
-type EntryPropId = 'lessonId' | 'groupId' | 'cabinetId';
+export type EntryPropId = 'lessonId' | 'groupId' | 'cabinetId';
 
-const defaultRels = [
+export const defaultRels = [
   { model: Teacher, through: { attributes: [] } },
   { model: Lesson },
   { model: Cabinet },

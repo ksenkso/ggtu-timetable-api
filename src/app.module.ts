@@ -13,6 +13,7 @@ import { GroupsModule } from './groups/groups.module';
 import { CabinetsModule } from './cabinets/cabinets.module';
 import { BuildingsModule } from './buildings/buildings.module';
 import { TimetableModule } from './timetable/timetable.module';
+import { PatchesModule } from './patches/patches.module';
 
 @Module({
   imports: [
@@ -38,7 +39,8 @@ import { TimetableModule } from './timetable/timetable.module';
       GroupsModule,
       CabinetsModule,
       BuildingsModule,
-      TimetableModule
+      TimetableModule,
+      PatchesModule
   ],
   controllers: [AppController],
   providers: [

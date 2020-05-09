@@ -1,21 +1,22 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { TimetablesService } from './timetable.service';
-import { Day, TimetableEntry, TimetableEntryType, Week } from '../models/timetable-entry.model';
+import { PatchesService } from './patches.service';
+import { Day, TimetableEntryType, Week } from '../models/timetable-entry.model';
+import { TimetablePatch } from '../models/patch.model';
 
-@Controller('api/timetable')
+@Controller('api/patches')
 export class TimetableController {
 
-  constructor(private timetableService: TimetablesService) {
+  constructor(private patchesService: PatchesService) {
   }
 
   @Get()
-  getAll(): Promise<TimetableEntry[]> {
-    return this.timetableService.findAll();
+  getAll(): Promise<TimetablePatch[]> {
+    return this.patchesService.findAll();
   }
 
   @Get(':id')
-  getTimetableEntry(@Param('id') teacherId: number): Promise<TimetableEntry> {
-    return this.timetableService.findOne(teacherId);
+  getTimetableEntry(@Param('id') teacherId: number): Promise<TimetablePatch> {
+    return this.patchesService.findOne(teacherId);
   }
 
   @Post()
@@ -29,7 +30,7 @@ export class TimetableController {
     @Body('index') index: number,
     @Body('type') type: TimetableEntryType,
   ) {
-    return this.timetableService.create({
+    return this.patchesService.create({
       lessonId,
       cabinetId,
       teacherIds,
@@ -42,7 +43,7 @@ export class TimetableController {
   }
 
   @Patch(':id')
-  updateTimetableEntry(
+  updateTimetablePatch(
     @Param('id') id: number,
     @Body('lessonId') lessonId: number,
     @Body('cabinetId') cabinetId: number,
@@ -53,7 +54,7 @@ export class TimetableController {
     @Body('index') index: number,
     @Body('type') type: TimetableEntryType,
   ) {
-    return this.timetableService.update(id, {
+    return this.patchesService.update(id, {
       lessonId,
       cabinetId,
       teacherIds,
@@ -66,67 +67,67 @@ export class TimetableController {
   }
 
   @Delete(':id')
-  deleteTimetableEntry(@Param('id') id: number) {
-    return this.timetableService.delete(id);
+  deleteTimetablePatch(@Param('id') id: number) {
+    return this.patchesService.delete(id);
   }
 
   @Get('group/:groupId')
-  async getGroupTimetable(
+  async getGroupTimetablePatches(
     @Param('groupId') groupId: number,
   ) {
-    return this.timetableService.forEntryPropId('groupId', groupId);
+    return this.patchesService.forEntryPropId('groupId', groupId);
   }
 
   @Get('group/:groupId/:week')
-  async getGroupTimetableByWeek(
+  async getGroupPatchesByWeek(
     @Param('groupId') groupId: number,
     @Param('week') week: Week,
   ) {
-    return this.timetableService.forEntryPropId('groupId', groupId, week);
+    return this.patchesService.forEntryPropId('groupId', groupId, week);
   }
 
   @Get('lesson/:lessonId')
-  async getLessonTimetable(
+  async getLessonPatches(
     @Param('lessonId') lessonId: number,
   ) {
-    return this.timetableService.forEntryPropId('lessonId', lessonId);
+    return this.patchesService.forEntryPropId('lessonId', lessonId);
   }
 
   @Get('lesson/:lessonId/:week')
-  async getLessonTimetableByWeek(
+  async getLessonPatchesByWeek(
     @Param('lessonId') lessonId: number,
     @Param('week') week: Week,
   ) {
-    return this.timetableService.forEntryPropId('lessonId', lessonId, week);
+    return this.patchesService.forEntryPropId('lessonId', lessonId, week);
   }
 
   @Get('cabinet/:cabinetId')
-  async getCabinetTimetable(
+  async getCabinetPatches(
     @Param('cabinetId') cabinetId: number,
   ) {
-    return this.timetableService.forEntryPropId('cabinetId', cabinetId);
+    return this.patchesService.forEntryPropId('cabinetId', cabinetId);
   }
 
   @Get('cabinet/:cabinetId/:week')
-  async getCabinetTimetableByWeek(
+  async getCabinetPatchesByWeek(
     @Param('cabinetId') cabinetId: number,
     @Param('week') week: Week,
   ) {
-    return this.timetableService.forEntryPropId('cabinetId', cabinetId, week);
+    return this.patchesService.forEntryPropId('cabinetId', cabinetId, week);
   }
 
   @Get('teacher/:teacherId')
-  async getTimetableForTeacher(
+  async getPatchesForTeacher(
     @Param('teacherId') teacherId: number,
   ) {
-    return this.timetableService.forTeacher(teacherId);
+    return this.patchesService.forTeacher(teacherId);
   }
 
   @Get('teacher/:teacherId/:week')
-  async getTimetableForTeacherByWeek(
+  async getPatchesForTeacherByWeek(
     @Param('teacherId') teacherId: number,
     @Param('week') week: Week,
   ) {
-    return this.timetableService.forTeacher(teacherId, week);
+    return this.patchesService.forTeacher(teacherId, week);
   }
 }
