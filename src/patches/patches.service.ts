@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { TimetablePatch } from '../models/patch.model';
 import { Week } from '../models/timetable-entry.model';
-import { CreateTimetableEntryDto } from '../timetable/dto/create-timetable-entry.dto';
-import { UpdateTimetableEntryDto } from '../timetable/dto/update-timetable-entry.dto';
 import { FindOptions } from 'sequelize';
 import { Teacher } from '../models/teacher.model';
 import { Lesson } from '../models/lesson.model';
 import { Cabinet } from '../models/cabinet.model';
 import { TeacherPatch } from '../models/teacher-patch.model';
 import { defaultRels, EntryPropId } from '../timetable/timetable.service';
+import { UpdatePatchEntryDto } from './dto/update-patch-entry.dto';
+import { CreatePatchEntryDto } from './dto/create-patch-entry.dto';
 
 @Injectable()
 export class PatchesService {
@@ -32,13 +32,13 @@ export class PatchesService {
     });
   }
 
-  async create(data: CreateTimetableEntryDto): Promise<TimetablePatch> {
+  async create(data: CreatePatchEntryDto): Promise<TimetablePatch> {
     const { teacherIds } = data;
     delete data.teacherIds;
     const patch = await this.patches.create(data);
     await this.teacherPatchJoins.bulkCreate(teacherIds.map(teacherId => ({
       teacherId,
-      timetableEntryId: patch.id,
+      timetablePatchId: patch.id,
     })));
     return this.patches.findByPk(patch.id, {
       include: defaultRels,
@@ -49,12 +49,12 @@ export class PatchesService {
     return this.patches.destroy({ where: { id } });
   }
 
-  async update(id: number, data: UpdateTimetableEntryDto): Promise<TimetablePatch> {
+  async update(id: number, data: UpdatePatchEntryDto): Promise<TimetablePatch> {
     if (data.teacherIds && data.teacherIds.length) {
-      await this.teacherPatchJoins.destroy({ where: { timetableEntryId: id } });
+      await this.teacherPatchJoins.destroy({ where: { timetablePatchId: id } });
       await this.teacherPatchJoins.bulkCreate(data.teacherIds.map(teacherId => ({
         teacherId,
-        timetableEntryId: id,
+        timetablePatchId: id,
       })));
     }
     delete data.teacherIds;

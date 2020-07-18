@@ -2,6 +2,9 @@ import { Column, ForeignKey, Model, Table } from 'sequelize-typescript';
 import { Teacher } from './teacher.model';
 import { TimetablePatch } from './patch.model';
 
+/**
+ * A relation similar to TeacherTimetable
+ */
 @Table({
   tableName: 'teacher_patch',
   timestamps: false,

@@ -1,10 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { PatchesService } from './patches.service';
-import { Day, TimetableEntryType, Week } from '../models/timetable-entry.model';
+import { TimetableEntryType, Week } from '../models/timetable-entry.model';
 import { TimetablePatch } from '../models/patch.model';
 
 @Controller('api/patches')
-export class TimetableController {
+export class PatchesController {
 
   constructor(private patchesService: PatchesService) {
   }
@@ -25,7 +25,7 @@ export class TimetableController {
     @Body('cabinetId') cabinetId: number,
     @Body('groupId') groupId: number,
     @Body('teacherIds') teacherIds: number[],
-    @Body('day') day: Day,
+    @Body('date') date: Date,
     @Body('week') week: Week,
     @Body('index') index: number,
     @Body('type') type: TimetableEntryType,
@@ -35,7 +35,7 @@ export class TimetableController {
       cabinetId,
       teacherIds,
       groupId,
-      day,
+      date,
       week,
       index,
       type,
@@ -49,7 +49,7 @@ export class TimetableController {
     @Body('cabinetId') cabinetId: number,
     @Body('groupId') groupId: number,
     @Body('teacherIds') teacherIds: number[],
-    @Body('day') day: Day,
+    @Body('date') date: Date,
     @Body('week') week: Week,
     @Body('index') index: number,
     @Body('type') type: TimetableEntryType,
@@ -59,7 +59,7 @@ export class TimetableController {
       cabinetId,
       teacherIds,
       groupId,
-      day,
+      date,
       week,
       index,
       type,
