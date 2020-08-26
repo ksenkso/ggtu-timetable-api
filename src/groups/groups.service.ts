@@ -26,7 +26,8 @@ export class GroupsService {
     }
 
     async delete(id: number): Promise<number> {
-        return this.groups.destroy({ where: { id } });
+        return this.groups.destroy({ where: { id } })
+          .then(() => id);
     }
 
     async update(id: number, data: UpdateGroupDto) {

@@ -33,7 +33,8 @@ export class CabinetsService {
     }
 
     async delete(id: number): Promise<number> {
-        return this.cabinets.destroy({ where: { id } });
+        return this.cabinets.destroy({ where: { id } })
+          .then(() => id);
     }
 
     async update(id: number, data: UpdateCabinetDto) {

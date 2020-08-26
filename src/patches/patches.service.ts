@@ -46,7 +46,8 @@ export class PatchesService {
   }
 
   async delete(id: number): Promise<number> {
-    return this.patches.destroy({ where: { id } });
+    return this.patches.destroy({ where: { id } })
+      .then(() => id);
   }
 
   async update(id: number, data: UpdatePatchEntryDto): Promise<TimetablePatch> {

@@ -64,7 +64,8 @@ export class TimetablesService {
   }
 
   async delete(id: number): Promise<number> {
-    return this.entries.destroy({ where: { id } });
+    return this.entries.destroy({ where: { id } })
+      .then(() => id);
   }
 
   async update(id: number, data: UpdateTimetableEntryDto) {

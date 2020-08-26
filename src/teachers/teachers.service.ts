@@ -25,7 +25,8 @@ export class TeachersService {
     }
 
     async delete(id: number): Promise<number> {
-        return this.teachers.destroy({where: {id}});
+        return this.teachers.destroy({where: {id}})
+          .then(() => id);
     }
 
     async update(id: number, data: UpdateTeacherDto) {

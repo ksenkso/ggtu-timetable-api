@@ -31,7 +31,8 @@ export class BuildingsService {
     }
 
     async delete(id: number): Promise<number> {
-        return this.buildings.destroy({ where: { id } });
+        return this.buildings.destroy({ where: { id } })
+          .then(() => id);
     }
 
     async update(id: number, data: UpdateBuildingDto) {
