@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { JwtGuard } from './jwt.guard';
 import { LocalGuard } from './local.guard';
 
-@Controller('auth')
+@Controller('api/auth')
 export class AuthController {
 
     constructor(
