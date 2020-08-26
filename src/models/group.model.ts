@@ -7,5 +7,5 @@ export class Group extends Model<Group> {
   name: string;
 
   @HasMany(() => TimetableEntry)
-  entries: TimetableEntry;
+  entries: TimetableEntry[];
 }
