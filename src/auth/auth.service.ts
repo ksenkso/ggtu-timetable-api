@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
@@ -24,11 +24,28 @@ export class AuthService {
     }
 
     async login(user: any) {
-        const payload = { username: user.username, sub: user.id };
+        const payload = { username: user.username, id: user.id };
+        return this.createPayload(payload);
+    }
+
+    async refresh(accessToken: string, refreshToken?: string) {
+        const accessPayload = this.jwtService.verify(accessToken) as any;
+        const refreshPayload = this.jwtService.verify(refreshToken) as any;
+        if (accessPayload.sub !== refreshPayload.sub) {
+            throw new UnauthorizedException({
+                name: 'InvalidSubjectError',
+                message: 'ids for refresh token and access token should be equal'
+            });
+        }
+        const {username, sub} = accessPayload;
+
+        return this.createPayload({username, id: sub});
+    }
+
+    private async createPayload({id, username}) {
         return {
-            token: this.jwtService.sign(payload),
-            id: user.id,
-            username: user.username
-        };
+            accessToken: this.jwtService.sign({username, sub: id}),
+            refreshToken: this.jwtService.sign({sub: id}, {expiresIn: '30 days'})
+        }
     }
 }
