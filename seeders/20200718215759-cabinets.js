@@ -9,7 +9,7 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
 
     const data = [];
-    const buildingIds = await queryInterface.sequelize.query('select id from `buildings`', {
+    const buildingIds = await queryInterface.sequelize.query('select id from `Buildings`', {
       raw: true,
       type: Sequelize.QueryTypes.SELECT
     });
@@ -18,16 +18,15 @@ module.exports = {
         data.push({name: `Кабинет ${i}`, buildingId: +buildingId.id, number: i, floor: 1});
       }
     });
-    await queryInterface.bulkInsert('cabinets', data);
+    await queryInterface.bulkInsert('Cabinets', data);
   },
   /**
    *
    * @param {QueryInterface} queryInterface
-   * @param Sequelize
    * @return {Promise<void>}
    */
-  down: async (queryInterface, Sequelize) => {
+  down: async (queryInterface) => {
 
-    await queryInterface.sequelize.query('truncate table `cabinets`');
+    await queryInterface.sequelize.query('truncate table `Cabinets`');
   }
 };

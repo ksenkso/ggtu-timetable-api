@@ -1,18 +1,18 @@
 'use strict';
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface) => {
 
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const data = require('./buildings.json');
-    await queryInterface.bulkInsert('buildings', data);
+    await queryInterface.bulkInsert('Buildings', data);
   },
   /**
    *
    * @param {QueryInterface} queryInterface
-   * @param Sequelize
    * @return {Promise<void>}
    */
-  down: async (queryInterface, Sequelize) => {
+  down: async (queryInterface) => {
 
-    await queryInterface.sequelize.query('truncate table `buildings`');
+    await queryInterface.sequelize.query('truncate table `Buildings`');
   }
 };
