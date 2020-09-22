@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { BuildingsService } from './buildings.service';
 import { Building } from '../models/building.model';
 
@@ -7,13 +7,16 @@ export class BuildingsController {
     constructor(private buildingsService: BuildingsService) {}
 
     @Get()
-    getAll(): Promise<Building[]> {
-        return this.buildingsService.findAll();
+    getAll(@Query('with') withEntities): Promise<Building[]> {
+        return this.buildingsService.findAll(withEntities);
     }
 
     @Get(':id')
-    getBuilding(@Param('id') teacherId: number): Promise<Building> {
-        return this.buildingsService.findOne(teacherId);
+    getBuilding(
+      @Param('id') teacherId: number,
+      @Query('with') withEntities
+  ): Promise<Building> {
+        return this.buildingsService.findOne(teacherId, withEntities);
     }
 
     @Post()
