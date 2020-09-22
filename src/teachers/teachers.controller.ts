@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { TeachersService } from './teachers.service';
 import { Teacher } from '../models/teacher.model';
 
@@ -8,13 +8,16 @@ export class TeachersController {
     constructor(private teachersService: TeachersService) {}
 
     @Get()
-    getAll(): Promise<Teacher[]> {
-        return this.teachersService.findAll();
+    getAll(@Query('with') withEntities: string): Promise<Teacher[]> {
+        return this.teachersService.findAll(withEntities);
     }
 
     @Get(':id')
-    getTeacher(@Param('id') teacherId: number): Promise<Teacher> {
-        return this.teachersService.findOne(teacherId);
+    getTeacher(
+      @Param('id') teacherId: number,
+      @Query('with') withEntities: string
+  ): Promise<Teacher> {
+        return this.teachersService.findOne(teacherId, withEntities);
     }
 
     @Post()
