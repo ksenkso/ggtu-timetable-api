@@ -3,21 +3,27 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Cabinet } from '../models/cabinet.model';
 import { CreateCabinetDto } from './dto/create-cabinet.dto';
 import { UpdateCabinetDto } from './dto/update-cabinet.dto';
+import IncludeFactory from '../utils/IncludeFactory';
 
 @Injectable()
 export class CabinetsService {
+    private includeFactory: IncludeFactory;
 
     constructor(
         @InjectModel(Cabinet)
         private cabinets: typeof Cabinet,
-    ) {}
-
-    findAll(): Promise<Cabinet[]> {
-        return this.cabinets.findAll().all();
+    ) {
+        this.includeFactory = new IncludeFactory({buildings: 'building'});
     }
 
-    async findOne(id: number) {
-        return this.cabinets.findByPk(id);
+    findAll(withEntities: string): Promise<Cabinet[]> {
+        return this.cabinets
+          .findAll({include: this.includeFactory.build(withEntities)})
+          .all();
+    }
+
+    async findOne(id: number, withEntities: string) {
+        return this.cabinets.findByPk(id, {include: this.includeFactory.build(withEntities)});
     }
 
     async create(data: CreateCabinetDto): Promise<Cabinet> {

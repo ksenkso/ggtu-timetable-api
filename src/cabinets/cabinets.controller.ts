@@ -1,19 +1,26 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CabinetsService } from './cabinets.service';
 import { Cabinet } from '../models/cabinet.model';
+import IncludeFactory from '../utils/IncludeFactory';
 
 @Controller('api/cabinets')
 export class CabinetsController {
-    constructor(private cabinetsService: CabinetsService) {}
+    private includeFactory: IncludeFactory;
+    constructor(private cabinetsService: CabinetsService) {
+        this.includeFactory = new IncludeFactory({buildings: 'buildings'});
+    }
 
     @Get()
-    getAll(): Promise<Cabinet[]> {
-        return this.cabinetsService.findAll();
+    getAll(@Query('with') withEntities: string): Promise<Cabinet[]> {
+        return this.cabinetsService.findAll(withEntities);
     }
 
     @Get(':id')
-    getCabinet(@Param('id') teacherId: number): Promise<Cabinet> {
-        return this.cabinetsService.findOne(teacherId);
+    getCabinet(
+      @Param('id') teacherId: number,
+      @Query('with') withEntities: string
+    ): Promise<Cabinet> {
+        return this.cabinetsService.findOne(teacherId, withEntities);
     }
 
     @Post()
