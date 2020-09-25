@@ -7,7 +7,7 @@ import { Teacher } from '../models/teacher.model';
 import { Lesson } from '../models/lesson.model';
 import { Cabinet } from '../models/cabinet.model';
 import { TeacherPatch } from '../models/teacher-patch.model';
-import { defaultRels, EntryPropId } from '../timetable/timetable.service';
+import { defaultRelations, EntryPropId } from '../timetable/timetable.service';
 import { UpdatePatchEntryDto } from './dto/update-patch-entry.dto';
 import { CreatePatchEntryDto } from './dto/create-patch-entry.dto';
 
@@ -22,13 +22,13 @@ export class PatchesService {
 
   findAll(): Promise<TimetablePatch[]> {
     return this.patches.findAll({
-      include: defaultRels,
+      include: defaultRelations,
     }).all();
   }
 
   async findOne(id: number) {
     return this.patches.findByPk(id, {
-      include: defaultRels,
+      include: defaultRelations,
     });
   }
 
@@ -41,7 +41,7 @@ export class PatchesService {
       timetablePatchId: patch.id,
     })));
     return this.patches.findByPk(patch.id, {
-      include: defaultRels,
+      include: defaultRelations,
     });
   }
 
@@ -61,7 +61,7 @@ export class PatchesService {
     delete data.teacherIds;
     await this.patches.update(data, { where: { id } });
     return this.patches.findByPk(id, {
-      include: defaultRels,
+      include: defaultRelations,
     });
   }
 
@@ -92,7 +92,7 @@ export class PatchesService {
       where: {
         [key]: id,
       },
-      include: defaultRels,
+      include: defaultRelations,
     };
     if (week === Week.Top || week === Week.Bottom) {
       options.where['week'] = week;

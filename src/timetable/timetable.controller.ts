@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { TimetablesService } from './timetable.service';
-import { Day, TimetableEntry, TimetableEntryType, Week } from '../models/timetable-entry.model';
+import { TimetableEntry } from '../models/timetable-entry.model';
 
 @Controller('api/timetable')
 export class TimetableController {
@@ -14,119 +14,123 @@ export class TimetableController {
   }
 
   @Get(':id')
-  getTimetableEntry(@Param('id') teacherId: number): Promise<TimetableEntry> {
-    return this.timetableService.findOne(teacherId);
+  getTimetableEntry(
+    @Param('id') teacherId: string
+  ): Promise<TimetableEntry> {
+    return this.timetableService.findOne(+teacherId);
   }
 
   @Post()
   addTimetableEntry(
-    @Body('lessonId') lessonId: number,
-    @Body('cabinetId') cabinetId: number,
-    @Body('groupId') groupId: number,
-    @Body('teacherIds') teacherIds: number[],
-    @Body('day') day: Day,
-    @Body('week') week: Week,
-    @Body('index') index: number,
-    @Body('type') type: TimetableEntryType,
+    @Body('lessonId') lessonId: string,
+    @Body('cabinetId') cabinetId: string,
+    @Body('groupId') groupId: string,
+    @Body('teacherIds') teacherIds: string[],
+    @Body('day') day: string,
+    @Body('week') week: string,
+    @Body('index') index: string,
+    @Body('type') type: string,
   ) {
     return this.timetableService.create({
-      lessonId,
-      cabinetId,
-      teacherIds,
-      groupId,
-      day,
-      week,
-      index,
-      type,
+      lessonId: +lessonId,
+      cabinetId: +cabinetId,
+      teacherIds: teacherIds.map(Number),
+      groupId: +groupId,
+      day: +day,
+      week: +week,
+      index: +index,
+      type: +type,
     });
   }
 
   @Patch(':id')
   updateTimetableEntry(
-    @Param('id') id: number,
-    @Body('lessonId') lessonId: number,
-    @Body('cabinetId') cabinetId: number,
-    @Body('groupId') groupId: number,
-    @Body('teacherIds') teacherIds: number[],
-    @Body('day') day: Day,
-    @Body('week') week: Week,
-    @Body('index') index: number,
-    @Body('type') type: TimetableEntryType,
+    @Param('id') id: string,
+    @Body('lessonId') lessonId: string,
+    @Body('cabinetId') cabinetId: string,
+    @Body('groupId') groupId: string,
+    @Body('teacherIds') teacherIds: string[],
+    @Body('day') day: string,
+    @Body('week') week: string,
+    @Body('index') index: string,
+    @Body('type') type: string,
   ) {
-    return this.timetableService.update(id, {
-      lessonId,
-      cabinetId,
-      teacherIds,
-      groupId,
-      day,
-      week,
-      index,
-      type,
+    return this.timetableService.update(+id, {
+      lessonId: +lessonId,
+      cabinetId: +cabinetId,
+      teacherIds: teacherIds.map(Number),
+      groupId: +groupId,
+      day: +day,
+      week: +week,
+      index: +index,
+      type: +type,
     });
   }
 
   @Delete(':id')
-  deleteTimetableEntry(@Param('id') id: number) {
-    return this.timetableService.delete(id);
+  deleteTimetableEntry(
+    @Param('id') id: string
+  ) {
+    return this.timetableService.delete(+id);
   }
 
   @Get('group/:groupId')
   async getGroupTimetable(
-    @Param('groupId') groupId: number,
+    @Param('groupId') groupId: string,
   ) {
-    return this.timetableService.forEntryPropId('groupId', groupId);
+    return this.timetableService.forEntryPropId('groupId', +groupId);
   }
 
   @Get('group/:groupId/:week')
   async getGroupTimetableByWeek(
-    @Param('groupId') groupId: number,
-    @Param('week') week: Week,
+    @Param('groupId') groupId: string,
+    @Param('week') week: string,
   ) {
-    return this.timetableService.forEntryPropId('groupId', groupId, week);
+    return this.timetableService.forEntryPropId('groupId', +groupId, +week);
   }
 
   @Get('lesson/:lessonId')
   async getLessonTimetable(
-    @Param('lessonId') lessonId: number,
+    @Param('lessonId') lessonId: string,
   ) {
-    return this.timetableService.forEntryPropId('lessonId', lessonId);
+    return this.timetableService.forEntryPropId('lessonId', +lessonId);
   }
 
   @Get('lesson/:lessonId/:week')
   async getLessonTimetableByWeek(
-    @Param('lessonId') lessonId: number,
-    @Param('week') week: Week,
+    @Param('lessonId') lessonId: string,
+    @Param('week') week: string,
   ) {
-    return this.timetableService.forEntryPropId('lessonId', lessonId, week);
+    return this.timetableService.forEntryPropId('lessonId', +lessonId, +week);
   }
 
   @Get('cabinet/:cabinetId')
   async getCabinetTimetable(
-    @Param('cabinetId') cabinetId: number,
+    @Param('cabinetId') cabinetId: string,
   ) {
-    return this.timetableService.forEntryPropId('cabinetId', cabinetId);
+    return this.timetableService.forEntryPropId('cabinetId', +cabinetId);
   }
 
   @Get('cabinet/:cabinetId/:week')
   async getCabinetTimetableByWeek(
-    @Param('cabinetId') cabinetId: number,
-    @Param('week') week: Week,
+    @Param('cabinetId') cabinetId: string,
+    @Param('week') week: string,
   ) {
-    return this.timetableService.forEntryPropId('cabinetId', cabinetId, week);
+    return this.timetableService.forEntryPropId('cabinetId', +cabinetId, +week);
   }
 
   @Get('teacher/:teacherId')
   async getTimetableForTeacher(
-    @Param('teacherId') teacherId: number,
+    @Param('teacherId') teacherId: string,
   ) {
-    return this.timetableService.forTeacher(teacherId);
+    return this.timetableService.forTeacher(+teacherId);
   }
 
   @Get('teacher/:teacherId/:week')
   async getTimetableForTeacherByWeek(
-    @Param('teacherId') teacherId: number,
-    @Param('week') week: Week,
+    @Param('teacherId') teacherId: string,
+    @Param('week') week: string,
   ) {
-    return this.timetableService.forTeacher(teacherId, week);
+    return this.timetableService.forTeacher(+teacherId, +week);
   }
 }

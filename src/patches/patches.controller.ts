@@ -80,10 +80,10 @@ export class PatchesController {
 
   @Get('group/:groupId/:week')
   async getGroupPatchesByWeek(
-    @Param('groupId') groupId: number,
-    @Param('week') week: Week,
+    @Param('groupId') groupId: string,
+    @Param('week') week: string,
   ) {
-    return this.patchesService.forEntryPropId('groupId', groupId, week);
+    return this.patchesService.forEntryPropId('groupId', +groupId, +week);
   }
 
   @Get('lesson/:lessonId')

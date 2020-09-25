@@ -11,7 +11,7 @@ import { Cabinet } from '../models/cabinet.model';
 
 export type EntryPropId = 'lessonId' | 'groupId' | 'cabinetId';
 
-export const defaultRels = [
+export const defaultRelations = [
   { model: Teacher, through: { attributes: [] } },
   { model: Lesson },
   { model: Cabinet },
@@ -29,7 +29,6 @@ export class TimetableQuery {
 
 @Injectable()
 export class TimetablesService {
-
   constructor(
     @InjectModel(TimetableEntry)
     private entries: typeof TimetableEntry,
@@ -40,13 +39,13 @@ export class TimetablesService {
 
   findAll(): Promise<TimetableEntry[]> {
     return this.entries.findAll({
-      include: defaultRels,
+      include: defaultRelations,
     }).all();
   }
 
   async findOne(id: number) {
     return this.entries.findByPk(id, {
-      include: defaultRels,
+      include: defaultRelations,
     });
   }
 
@@ -59,7 +58,7 @@ export class TimetablesService {
       timetableEntryId: entry.id,
     })));
     return this.entries.findByPk(entry.id, {
-      include: defaultRels,
+      include: defaultRelations,
     });
   }
 
@@ -79,7 +78,7 @@ export class TimetablesService {
     delete data.teacherIds;
     await this.entries.update(data, { where: { id } });
     return this.entries.findByPk(id, {
-      include: defaultRels,
+      include: defaultRelations,
     });
   }
 
@@ -92,6 +91,7 @@ export class TimetablesService {
       ],
       where: {},
     };
+
     if (week === Week.Top || week === Week.Bottom) {
       options.where['week'] = week;
     }
@@ -110,7 +110,7 @@ export class TimetablesService {
       where: {
         [key]: id,
       },
-      include: defaultRels,
+      include: defaultRelations,
     };
     if (week === Week.Top || week === Week.Bottom) {
       options.where['week'] = week;
