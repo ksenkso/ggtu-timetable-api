@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { TimetablePatch } from '../models/patch.model';
 import { Week } from '../models/timetable-entry.model';
@@ -7,18 +7,38 @@ import { Teacher } from '../models/teacher.model';
 import { Lesson } from '../models/lesson.model';
 import { Cabinet } from '../models/cabinet.model';
 import { TeacherPatch } from '../models/teacher-patch.model';
-import { defaultRelations, EntryPropId } from '../timetable/timetable.service';
+import { EntryPropId } from '../timetable/timetable.service';
 import { UpdatePatchEntryDto } from './dto/update-patch-entry.dto';
 import { CreatePatchEntryDto } from './dto/create-patch-entry.dto';
+import { PatchDate } from '../models/patch-date';
+import { Building } from '../models/building.model';
+
+const defaultRelations = [
+  // { model: PatchDate },
+  { association: 'patchDates' },
+  { model: Teacher, through: { attributes: [] } },
+  { model: Lesson },
+  {
+    model: Cabinet, include: [
+      { model: Building },
+    ],
+  },
+];
+
 
 @Injectable()
 export class PatchesService {
+  private logger = new Logger(PatchesService.name);
+
   constructor(
     @InjectModel(TimetablePatch)
     private patches: typeof TimetablePatch,
     @InjectModel(TeacherPatch)
     private teacherPatchJoins: typeof TeacherPatch,
-  ) {}
+    @InjectModel(PatchDate)
+    private patchDates: typeof PatchDate,
+  ) {
+  }
 
   findAll(): Promise<TimetablePatch[]> {
     return this.patches.findAll({
@@ -33,13 +53,23 @@ export class PatchesService {
   }
 
   async create(data: CreatePatchEntryDto): Promise<TimetablePatch> {
-    const { teacherIds } = data;
+    // afterSave hook doesn't work, i don't know why,
+    // so i just update related data here
+    this.logger.log(data);
+    const { teacherIds, dates } = data;
     delete data.teacherIds;
+    delete data.dates;
     const patch = await this.patches.create(data);
+    await this.patchDates.destroy({ where: { patchId: patch.id } });
+    await this.patchDates.bulkCreate(dates.map(date => ({
+      date,
+      patchId: patch.id,
+    })));
     await this.teacherPatchJoins.bulkCreate(teacherIds.map(teacherId => ({
       teacherId,
       timetablePatchId: patch.id,
     })));
+
     return this.patches.findByPk(patch.id, {
       include: defaultRelations,
     });
@@ -50,6 +80,11 @@ export class PatchesService {
       .then(() => id);
   }
 
+  /**
+   * @see PatchesService#create
+   * @param id
+   * @param data
+   */
   async update(id: number, data: UpdatePatchEntryDto): Promise<TimetablePatch> {
     if (data.teacherIds && data.teacherIds.length) {
       await this.teacherPatchJoins.destroy({ where: { timetablePatchId: id } });
@@ -59,8 +94,18 @@ export class PatchesService {
       })));
     }
     delete data.teacherIds;
-    await this.patches.update(data, { where: { id } });
-    return this.patches.findByPk(id, {
+    if (data.dates && data.dates.length) {
+      const { dates } = data;
+      delete data.dates;
+      await this.patchDates.destroy({ where: { patchId: id } });
+      await this.patchDates.bulkCreate(dates.map(date => ({
+        date,
+        patchId: id,
+      })));
+    }
+    console.log(data);
+    await this.patches.update(data, { where: { id }, });
+    return this.patches.findByPk(+id, {
       include: defaultRelations,
     });
   }

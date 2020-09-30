@@ -8,24 +8,19 @@ import { Teacher } from '../models/teacher.model';
 import { FindOptions } from 'sequelize';
 import { Lesson } from '../models/lesson.model';
 import { Cabinet } from '../models/cabinet.model';
+import { Building } from '../models/building.model';
 
 export type EntryPropId = 'lessonId' | 'groupId' | 'cabinetId';
 
-export const defaultRelations = [
+const defaultRelations = [
   { model: Teacher, through: { attributes: [] } },
   { model: Lesson },
-  { model: Cabinet },
+  {
+    model: Cabinet, include: [
+      { model: Building },
+    ],
+  },
 ];
-
-export class TimetableQuery {
-  where?: {
-    groupId?: number;
-    teacherId?: number;
-    cabinetId?: number;
-    lessonId?: number;
-  };
-  include: string[];
-}
 
 @Injectable()
 export class TimetablesService {

@@ -8,9 +8,10 @@ import { Group } from '../models/group.model';
 import { Teacher } from '../models/teacher.model';
 import { Cabinet } from '../models/cabinet.model';
 import { TeacherPatch } from '../models/teacher-patch.model';
+import { PatchDate } from '../models/patch-date';
 
 @Module({
-  imports: [SequelizeModule.forFeature([TimetablePatch, Lesson, Group, Teacher, Cabinet, TeacherPatch])],
+  imports: [SequelizeModule.forFeature([TimetablePatch, Lesson, Group, Teacher, Cabinet, TeacherPatch, PatchDate])],
   controllers: [PatchesController],
   providers: [PatchesService],
 })

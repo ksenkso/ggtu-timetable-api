@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { PatchesService } from './patches.service';
-import { TimetableEntryType, Week } from '../models/timetable-entry.model';
+import { Week } from '../models/timetable-entry.model';
 import { TimetablePatch } from '../models/patch.model';
 
 @Controller('api/patches')
@@ -21,48 +21,44 @@ export class PatchesController {
 
   @Post()
   addTimetableEntry(
-    @Body('lessonId') lessonId: number,
-    @Body('cabinetId') cabinetId: number,
-    @Body('groupId') groupId: number,
-    @Body('teacherIds') teacherIds: number[],
-    @Body('date') date: Date,
-    @Body('week') week: Week,
-    @Body('index') index: number,
-    @Body('type') type: TimetableEntryType,
+    @Body('lessonId') lessonId: string,
+    @Body('cabinetId') cabinetId: string,
+    @Body('groupId') groupId: string,
+    @Body('teacherIds') teacherIds: string[],
+    @Body('dates') dates: string[],
+    @Body('index') index: string,
+    @Body('type') type: string,
   ) {
     return this.patchesService.create({
-      lessonId,
-      cabinetId,
-      teacherIds,
-      groupId,
-      date,
-      week,
-      index,
-      type,
+      lessonId: +lessonId,
+      cabinetId: +cabinetId,
+      teacherIds: teacherIds.map(Number),
+      groupId: +groupId,
+      dates,
+      index: +index,
+      type: +type,
     });
   }
 
   @Patch(':id')
   updateTimetablePatch(
-    @Param('id') id: number,
-    @Body('lessonId') lessonId: number,
-    @Body('cabinetId') cabinetId: number,
-    @Body('groupId') groupId: number,
-    @Body('teacherIds') teacherIds: number[],
-    @Body('date') date: Date,
-    @Body('week') week: Week,
-    @Body('index') index: number,
-    @Body('type') type: TimetableEntryType,
+    @Param('id') id: string,
+    @Body('lessonId') lessonId?: string,
+    @Body('cabinetId') cabinetId?: string,
+    @Body('groupId') groupId?: string,
+    @Body('teacherIds') teacherIds: string[] = [],
+    @Body('dates') dates?: string[],
+    @Body('index') index?: string,
+    @Body('type') type?: string,
   ) {
-    return this.patchesService.update(id, {
-      lessonId,
-      cabinetId,
-      teacherIds,
-      groupId,
-      date,
-      week,
-      index,
-      type,
+    return this.patchesService.update(+id, {
+      lessonId: lessonId && +lessonId,
+      cabinetId: cabinetId && +cabinetId,
+      teacherIds: teacherIds && teacherIds.map(Number),
+      groupId: groupId && +groupId,
+      dates,
+      index: index && +index,
+      type: type && +type,
     });
   }
 

@@ -1,10 +1,11 @@
-import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
+import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, HasMany, Model, Table } from 'sequelize-typescript';
 import { Lesson } from './lesson.model';
 import { Cabinet } from './cabinet.model';
 import { Group } from './group.model';
 import { Teacher } from './teacher.model';
-import { TimetableEntryType, Week } from './timetable-entry.model';
+import { TimetableEntryType } from './timetable-entry.model';
 import { TeacherPatch } from './teacher-patch.model';
+import { PatchDate } from './patch-date';
 
 /**
  * This entity is similar to TimetableEntry but represents a patched entry,
@@ -16,27 +17,13 @@ import { TeacherPatch } from './teacher-patch.model';
 })
 export class TimetablePatch extends Model<TimetablePatch> {
 
-  @Column(DataType.DATEONLY)
-  get date(): string {
-    const date = this.getDataValue('date');
-    return new Date(date).toLocaleDateString('ru-RU');
+  @Column(DataType.VIRTUAL)
+  get dates(): string[] {
+    return this.patchDates ? this.patchDates.map(date => date.date) : [];
   }
 
-  /**
-   *
-   * @param value should be a string like `dd.mm.yyyy`
-   */
-  set date(value: string) {
-    const [day, month, year] = value.split('.');
-    const date = new Date();
-    date.setFullYear(+year);
-    date.setMonth(+month-1);
-    date.setDate(+day);
-    this.setDataValue('date', date.toLocaleDateString('en-US'));
-  }
-
-  @Column
-  week: Week;
+  @HasMany(() => PatchDate)
+  patchDates: PatchDate[];
 
   @Column
   index: number;
