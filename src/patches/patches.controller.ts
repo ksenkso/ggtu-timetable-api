@@ -1,77 +1,61 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { PatchesService } from './patches.service';
-import { Week } from '../models/timetable-entry.model';
-import { TimetablePatch } from '../models/patch.model';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Lesson } from '../models/lesson.model';
+import { Week } from '../models/regular-timetable';
+import { TimetablesService } from '../timetable/timetable.service';
+import { Request } from 'express';
+import { User } from '../models/user.model';
+import { CreatePatchDto } from './dto/create-patch.dto';
+import { JwtGuard } from '../auth/jwt.guard';
+import { UpdatePatchDto } from './dto/update-patch.dto';
 
 @Controller('api/patches')
 export class PatchesController {
 
-  constructor(private patchesService: PatchesService) {
+  constructor(private timetablesService: TimetablesService) {
   }
 
   @Get()
-  getAll(): Promise<TimetablePatch[]> {
-    return this.patchesService.findAll();
+  getAll(): Promise<Lesson[]> {
+    return this.timetablesService.findAll({ isRegular: false });
   }
 
   @Get(':id')
-  getTimetableEntry(@Param('id') teacherId: number): Promise<TimetablePatch> {
-    return this.patchesService.findOne(teacherId);
+  getTimetableEntry(@Param('id') id: number): Promise<Lesson> {
+    return this.timetablesService.findOne(id);
   }
 
+  @UseGuards(JwtGuard)
   @Post()
   addTimetableEntry(
-    @Body('lessonId') lessonId: string,
-    @Body('cabinetId') cabinetId: string,
-    @Body('groupId') groupId: string,
-    @Body('teacherIds') teacherIds: string[],
-    @Body('dates') dates: string[],
-    @Body('index') index: string,
-    @Body('type') type: string,
+    @Req() request: Request,
+    @Body() patchDto: CreatePatchDto,
   ) {
-    return this.patchesService.create({
-      lessonId: +lessonId,
-      cabinetId: +cabinetId,
-      teacherIds: teacherIds.map(Number),
-      groupId: +groupId,
-      dates,
-      index: +index,
-      type: +type,
-    });
+    patchDto.isRegular = false;
+    return this.timetablesService.create(request.user as User, patchDto);
   }
 
   @Patch(':id')
-  updateTimetablePatch(
-    @Param('id') id: string,
-    @Body('lessonId') lessonId?: string,
-    @Body('cabinetId') cabinetId?: string,
-    @Body('groupId') groupId?: string,
-    @Body('teacherIds') teacherIds: string[] = [],
-    @Body('dates') dates?: string[],
-    @Body('index') index?: string,
-    @Body('type') type?: string,
+  updatePatch(
+    @Req() request: Request,
+    @Param('id') id: number,
+    @Body() patchDto: UpdatePatchDto,
   ) {
-    return this.patchesService.update(+id, {
-      lessonId: lessonId && +lessonId,
-      cabinetId: cabinetId && +cabinetId,
-      teacherIds: teacherIds && teacherIds.map(Number),
-      groupId: groupId && +groupId,
-      dates,
-      index: index && +index,
-      type: type && +type,
-    });
+    return this.timetablesService.update(request.user as User, id, patchDto);
   }
-
+  @UseGuards(JwtGuard)
   @Delete(':id')
-  deleteTimetablePatch(@Param('id') id: number) {
-    return this.patchesService.delete(id);
+  deleteLesson(
+    @Req() request: Request,
+    @Param('id') id: number,
+  ) {
+    return this.timetablesService.delete(request.user as User, id);
   }
 
   @Get('group/:groupId')
-  async getGroupTimetablePatches(
+  async getGroupPatches(
     @Param('groupId') groupId: number,
   ) {
-    return this.patchesService.forEntryPropId('groupId', groupId);
+    return this.timetablesService.forLessonPropId({ key: 'groupId', id: groupId, isRegular: false });
   }
 
   @Get('group/:groupId/:week')
@@ -79,14 +63,14 @@ export class PatchesController {
     @Param('groupId') groupId: string,
     @Param('week') week: string,
   ) {
-    return this.patchesService.forEntryPropId('groupId', +groupId, +week);
+    return this.timetablesService.forLessonPropId({ key: 'groupId', id: +groupId, week: +week, isRegular: false });
   }
 
   @Get('lesson/:lessonId')
   async getLessonPatches(
     @Param('lessonId') lessonId: number,
   ) {
-    return this.patchesService.forEntryPropId('lessonId', lessonId);
+    return this.timetablesService.forLessonPropId({ key: 'lessonId', id: lessonId, isRegular: false });
   }
 
   @Get('lesson/:lessonId/:week')
@@ -94,14 +78,14 @@ export class PatchesController {
     @Param('lessonId') lessonId: number,
     @Param('week') week: Week,
   ) {
-    return this.patchesService.forEntryPropId('lessonId', lessonId, week);
+    return this.timetablesService.forLessonPropId({ key: 'lessonId', id: lessonId, week: week, isRegular: false });
   }
 
   @Get('cabinet/:cabinetId')
   async getCabinetPatches(
     @Param('cabinetId') cabinetId: number,
   ) {
-    return this.patchesService.forEntryPropId('cabinetId', cabinetId);
+    return this.timetablesService.forLessonPropId({ key: 'cabinetId', id: cabinetId, isRegular: false });
   }
 
   @Get('cabinet/:cabinetId/:week')
@@ -109,14 +93,14 @@ export class PatchesController {
     @Param('cabinetId') cabinetId: number,
     @Param('week') week: Week,
   ) {
-    return this.patchesService.forEntryPropId('cabinetId', cabinetId, week);
+    return this.timetablesService.forLessonPropId({ key: 'cabinetId', id: cabinetId, week: week, isRegular: false });
   }
 
   @Get('teacher/:teacherId')
   async getPatchesForTeacher(
     @Param('teacherId') teacherId: number,
   ) {
-    return this.patchesService.forTeacher(teacherId);
+    return this.timetablesService.forTeacher(teacherId, false);
   }
 
   @Get('teacher/:teacherId/:week')
@@ -124,6 +108,6 @@ export class PatchesController {
     @Param('teacherId') teacherId: number,
     @Param('week') week: Week,
   ) {
-    return this.patchesService.forTeacher(teacherId, week);
+    return this.timetablesService.forTeacher(teacherId, false, week);
   }
 }

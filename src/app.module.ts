@@ -8,7 +8,7 @@ import { UsersModule } from './users/users.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './auth/roles.guard';
 import { TeachersModule } from './teachers/teachers.module';
-import { LessonsModule } from './lessons/lessons.module';
+import { SubjectsModule } from './subjects/subjects.module';
 import { GroupsModule } from './groups/groups.module';
 import { CabinetsModule } from './cabinets/cabinets.module';
 import { BuildingsModule } from './buildings/buildings.module';
@@ -35,7 +35,7 @@ import { PatchesModule } from './patches/patches.module';
       }),
       UsersModule,
       TeachersModule,
-      LessonsModule,
+      SubjectsModule,
       GroupsModule,
       CabinetsModule,
       BuildingsModule,

@@ -1,6 +1,6 @@
 import { Column, ForeignKey, Model, Table } from 'sequelize-typescript';
 import { Teacher } from './teacher.model';
-import { TimetableEntry } from './timetable-entry.model';
+import { Lesson } from './lesson.model';
 
 @Table({
   tableName: 'teacher_timetable',
@@ -8,9 +8,9 @@ import { TimetableEntry } from './timetable-entry.model';
 })
 export class TeacherTimetable extends Model<TeacherTimetable> {
 
-  @ForeignKey(() => TimetableEntry)
+  @ForeignKey(() => Lesson)
   @Column
-  timetableEntryId: number;
+  lessonId: number;
 
   @ForeignKey(() => Teacher)
   @Column
