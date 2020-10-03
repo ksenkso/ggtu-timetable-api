@@ -1,20 +1,38 @@
 [
   {
-    "name": "ИМ-17"
+    "name": "ИМ-17",
+    "entranceYear": 2017,
+    "specializationId": 4,
+    "facultyId": 1
   },
   {
-    "name": "ИИЯ-17"
+    "name": "ИИЯ-17",
+    "entranceYear": 2017,
+    "specializationId": 4,
+    "facultyId": 1
   },
   {
-    "name": "ИМ-18"
+    "name": "ИМ-18",
+    "entranceYear": 2018,
+    "specializationId": 4,
+    "facultyId": 1
   },
   {
-    "name": "ИИЯ-18"
+    "name": "ИИЯ-18",
+    "entranceYear": 2018,
+    "specializationId": 4,
+    "facultyId": 1
   },
   {
-    "name": "ИМ-19"
+    "name": "ИМ-19",
+    "entranceYear": 2019,
+    "specializationId": 4,
+    "facultyId": 1
   },
   {
-    "name": "ИИЯ-19"
+    "name": "ИИЯ-19",
+    "entranceYear": 2019,
+    "specializationId": 4,
+    "facultyId": 1
   }
 ]
