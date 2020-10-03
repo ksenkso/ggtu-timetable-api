@@ -1,3 +1,18 @@
+import { IsNumber, IsOptional } from 'class-validator';
+
 export class UpdateGroupDto {
-    name: string;
+    @IsOptional()
+    name?: string;
+
+    @IsOptional()
+    @IsNumber()
+    entranceYear?: number;
+
+    @IsOptional()
+    @IsNumber()
+    specializationId?: number;
+
+    @IsOptional()
+    @IsNumber()
+    facultyId?: number;
 }

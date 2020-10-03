@@ -3,34 +3,43 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Group } from '../models/group.model';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
+import { Specialization } from '../models/specialization.model';
+import { Faculty } from '../models/faculty.model';
 
 @Injectable()
 export class GroupsService {
 
-    constructor(
-        @InjectModel(Group)
-        private groups: typeof Group,
-    ) {}
+  static relations = [
+    { model: Specialization },
+    { model: Faculty },
+  ];
 
-    findAll(): Promise<Group[]> {
-        return this.groups.findAll().all();
-    }
+  constructor(
+    @InjectModel(Group)
+    private groups: typeof Group,
+  ) {
+  }
 
-    async findOne(id: number) {
-        return this.groups.findByPk(id);
-    }
+  findAll(): Promise<Group[]> {
+    return this.groups.findAll({ include: GroupsService.relations }).all();
+  }
 
-    async create(data: CreateGroupDto): Promise<Group> {
-        const group = new Group(data);
-        return group.save();
-    }
+  async findOne(id: number) {
+    return this.groups.findByPk(id, { include: GroupsService.relations });
+  }
 
-    async delete(id: number): Promise<number> {
-        return this.groups.destroy({ where: { id } })
-          .then(() => id);
-    }
+  async create(data: CreateGroupDto): Promise<Group> {
+    const group = await this.groups.create(data);
+    return this.groups.findByPk(group.id, { include: GroupsService.relations });
+  }
 
-    async update(id: number, data: UpdateGroupDto) {
-        return this.groups.update(data, { where: { id } });
-    }
+  async delete(id: number): Promise<number> {
+    return this.groups.destroy({ where: { id } })
+      .then(() => id);
+  }
+
+  async update(id: number, data: UpdateGroupDto) {
+    await this.groups.update(data, { where: { id } });
+    return this.groups.findByPk(id, { include: GroupsService.relations });
+  }
 }
