@@ -14,6 +14,8 @@ import { CabinetsModule } from './cabinets/cabinets.module';
 import { BuildingsModule } from './buildings/buildings.module';
 import { TimetableModule } from './timetable/timetable.module';
 import { PatchesModule } from './patches/patches.module';
+import { FacultiesModule } from './faculties/faculties.module';
+import { SpecializationsModule } from './specializations/specializations.module';
 
 @Module({
   imports: [
@@ -40,7 +42,9 @@ import { PatchesModule } from './patches/patches.module';
       CabinetsModule,
       BuildingsModule,
       TimetableModule,
-      PatchesModule
+      PatchesModule,
+      FacultiesModule,
+      SpecializationsModule,
   ],
   controllers: [AppController],
   providers: [
