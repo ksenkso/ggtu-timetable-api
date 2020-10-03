@@ -1,18 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Lesson } from '../models/lesson.model';
-import { CreateLessonDto } from './dto/create-lesson.dto';
-import { UpdateLessonDto } from './dto/update-lesson.dto';
+import { Subject } from '../models/subject.model';
+import { CreateSubjectDto } from './dto/create-subject.dto';
+import { UpdateSubjectDto } from './dto/update-subject.dto';
 
 @Injectable()
-export class LessonsService {
+export class SubjectsService {
 
     constructor(
-        @InjectModel(Lesson)
-        private lessons: typeof Lesson,
+        @InjectModel(Subject)
+        private lessons: typeof Subject,
     ) {}
 
-    findAll(): Promise<Lesson[]> {
+    findAll(): Promise<Subject[]> {
         return this.lessons.findAll().all();
     }
 
@@ -25,8 +25,8 @@ export class LessonsService {
         }
     }
 
-    async create(data: CreateLessonDto): Promise<Lesson> {
-        const lesson = new Lesson(data);
+    async create(data: CreateSubjectDto): Promise<Subject> {
+        const lesson = new Subject(data);
         return lesson.save();
     }
 
@@ -35,7 +35,7 @@ export class LessonsService {
           .then(() => id);
     }
 
-    async update(id: number, data: UpdateLessonDto) {
+    async update(id: number, data: UpdateSubjectDto) {
         return this.lessons.update(data, { where: { id } });
     }
 }

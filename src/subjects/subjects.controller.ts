@@ -1,18 +1,18 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { LessonsService } from './lessons.service';
-import { Lesson } from '../models/lesson.model';
+import { SubjectsService } from './subjects.service';
+import { Subject } from '../models/subject.model';
 
-@Controller('api/lessons')
-export class LessonsController {
-    constructor(private lessonsService: LessonsService) {}
+@Controller('api/subjects')
+export class SubjectsController {
+    constructor(private lessonsService: SubjectsService) {}
 
     @Get()
-    getAll(): Promise<Lesson[]> {
+    getAll(): Promise<Subject[]> {
         return this.lessonsService.findAll();
     }
 
     @Get(':id')
-    getLesson(@Param('id') teacherId: number): Promise<Lesson> {
+    getLesson(@Param('id') teacherId: number): Promise<Subject> {
         return this.lessonsService.findOne(teacherId);
     }
 
