@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { CabinetsService } from './cabinets.service';
 import { Cabinet } from '../models/cabinet.model';
 import IncludeFactory from '../utils/IncludeFactory';
@@ -17,16 +17,15 @@ export class CabinetsController {
   }
 
   @Get()
-  getAll(@Query('with') withEntities: string): Promise<Cabinet[]> {
-    return this.cabinetsService.findAll(withEntities);
+  getAll(): Promise<Cabinet[]> {
+    return this.cabinetsService.findAll();
   }
 
   @Get(':id')
   getCabinet(
     @Param('id') teacherId: number,
-    @Query('with') withEntities: string,
   ): Promise<Cabinet> {
-    return this.cabinetsService.findOne(teacherId, withEntities);
+    return this.cabinetsService.findOne(teacherId);
   }
 
   @Roles('admin')
