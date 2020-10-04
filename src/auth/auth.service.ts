@@ -30,7 +30,7 @@ export class AuthService {
   }
 
   async refresh(accessToken: string, refreshToken?: string) {
-    const accessPayload = this.jwtService.verify(accessToken) as any;
+    const accessPayload = this.jwtService.verify(accessToken, { ignoreExpiration: true }) as any;
     const refreshPayload = this.jwtService.verify(refreshToken) as any;
     if (accessPayload.sub !== refreshPayload.sub) {
       throw new UnauthorizedException({
@@ -39,11 +39,10 @@ export class AuthService {
       });
     }
     const { username, sub } = accessPayload;
-
     return this.createPayload({ username, id: sub });
   }
 
-  private async createPayload({ id, username }) {
+  private async createPayload({ id, username }): Promise<{ accessToken: string, refreshToken: string }> {
     return {
       accessToken: this.jwtService.sign({ username, sub: id }),
       refreshToken: this.jwtService.sign({ sub: id }, { expiresIn: '30 days' }),
