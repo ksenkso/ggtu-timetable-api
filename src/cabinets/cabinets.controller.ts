@@ -2,50 +2,47 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 import { CabinetsService } from './cabinets.service';
 import { Cabinet } from '../models/cabinet.model';
 import IncludeFactory from '../utils/IncludeFactory';
+import { CreateCabinetDto } from './dto/create-cabinet.dto';
+import { UpdateCabinetDto } from './dto/update-cabinet.dto';
 
 @Controller('api/cabinets')
 export class CabinetsController {
-    private includeFactory: IncludeFactory;
-    constructor(private cabinetsService: CabinetsService) {
-        this.includeFactory = new IncludeFactory({buildings: 'buildings'});
-    }
+  private includeFactory: IncludeFactory;
 
-    @Get()
-    getAll(@Query('with') withEntities: string): Promise<Cabinet[]> {
-        return this.cabinetsService.findAll(withEntities);
-    }
+  constructor(private cabinetsService: CabinetsService) {
+    this.includeFactory = new IncludeFactory({ buildings: 'buildings' });
+  }
 
-    @Get(':id')
-    getCabinet(
-      @Param('id') teacherId: number,
-      @Query('with') withEntities: string
-    ): Promise<Cabinet> {
-        return this.cabinetsService.findOne(teacherId, withEntities);
-    }
+  @Get()
+  getAll(@Query('with') withEntities: string): Promise<Cabinet[]> {
+    return this.cabinetsService.findAll(withEntities);
+  }
 
-    @Post()
-    addCabinet(
-        @Body('name') name: string,
-        @Body('number') number: number,
-        @Body('floor') floor: number,
-        @Body('buildingId') buildingId: number,
-    ) {
-        return this.cabinetsService.create({name, number, floor, buildingId});
-    }
+  @Get(':id')
+  getCabinet(
+    @Param('id') teacherId: number,
+    @Query('with') withEntities: string,
+  ): Promise<Cabinet> {
+    return this.cabinetsService.findOne(teacherId, withEntities);
+  }
 
-    @Patch(':id')
-    updateCabinet(
-        @Param('id') id: number,
-        @Body('name') name: string,
-        @Body('number') number: number,
-        @Body('floor') floor: number,
-        @Body('buildingId') buildingId: number,
-    ) {
-        return this.cabinetsService.update(id, {name, number, floor, buildingId});
-    }
+  @Post()
+  addCabinet(
+    @Body() cabinetDto: CreateCabinetDto,
+  ) {
+    return this.cabinetsService.create(cabinetDto);
+  }
 
-    @Delete(':id')
-    deleteCabinet(@Param('id') id: number) {
-        return this.cabinetsService.delete(id);
-    }
+  @Patch(':id')
+  updateCabinet(
+    @Param('id') id: number,
+    @Body() cabinetDto: UpdateCabinetDto,
+  ) {
+    return this.cabinetsService.update(id, cabinetDto);
+  }
+
+  @Delete(':id')
+  deleteCabinet(@Param('id') id: number) {
+    return this.cabinetsService.delete(id);
+  }
 }

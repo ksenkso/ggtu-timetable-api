@@ -66,14 +66,14 @@ export class PatchesController {
     return this.timetablesService.forLessonPropId({ key: 'groupId', id: +groupId, week: +week, isRegular: false });
   }
 
-  @Get('lesson/:lessonId')
+  @Get('subject/:lessonId')
   async getLessonPatches(
     @Param('lessonId') lessonId: number,
   ) {
     return this.timetablesService.forLessonPropId({ key: 'lessonId', id: lessonId, isRegular: false });
   }
 
-  @Get('lesson/:lessonId/:week')
+  @Get('subject/:lessonId/:week')
   async getLessonPatchesByWeek(
     @Param('lessonId') lessonId: number,
     @Param('week') week: Week,

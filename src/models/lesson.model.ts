@@ -122,7 +122,7 @@ export class Lesson extends Model<Lesson> {
   cabinet: Cabinet;
 
   @BelongsTo(() => Subject)
-  lesson: Subject;
+  subject: Subject;
 
   @BelongsToMany(() => Teacher, () => TeacherTimetable)
   teachers: Teacher[];

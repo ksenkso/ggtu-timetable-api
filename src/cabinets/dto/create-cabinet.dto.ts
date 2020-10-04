@@ -1,6 +1,15 @@
+import { IsNotEmpty } from 'class-validator';
+
 export class CreateCabinetDto {
-    name: string;
-    number: number;
-    floor: number;
-    buildingId: number;
+  @IsNotEmpty()
+  name: string;
+
+  @IsNotEmpty()
+  number: number;
+
+  @IsNotEmpty()
+  floor: number;
+
+  @IsNotEmpty()
+  buildingId: number;
 }

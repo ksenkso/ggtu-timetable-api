@@ -7,33 +7,35 @@ import IncludeFactory from '../utils/IncludeFactory';
 
 @Injectable()
 export class TeachersService {
-    private includeFactory: IncludeFactory;
-    constructor(
-        @InjectModel(Teacher)
-        private teachers: typeof Teacher
-    ) {
-        this.includeFactory = new IncludeFactory({timetable: 'lessons'});
-    }
+  private includeFactory: IncludeFactory;
 
-    findAll(withEntities = ''): Promise<Teacher[]> {
-        return this.teachers.findAll({include: this.includeFactory.build(withEntities)}).all();
-    }
+  constructor(
+    @InjectModel(Teacher)
+    private teachers: typeof Teacher,
+  ) {
+    this.includeFactory = new IncludeFactory({ timetable: 'lessons' });
+  }
 
-    async findOne(id: number, withEntities = '') {
-        return this.teachers.findByPk(id, {include: this.includeFactory.build(withEntities)});
-    }
+  findAll(withEntities = ''): Promise<Teacher[]> {
+    return this.teachers.findAll({ include: this.includeFactory.build(withEntities) }).all();
+  }
 
-    async create(data: CreateTeacherDto): Promise<Teacher> {
-        const user = new Teacher(data);
-        return user.save();
-    }
+  async findOne(id: number, withEntities = '') {
+    return this.teachers.findByPk(id, { include: this.includeFactory.build(withEntities) });
+  }
 
-    async delete(id: number): Promise<number> {
-        return this.teachers.destroy({where: {id}})
-          .then(() => id);
-    }
+  async create(data: CreateTeacherDto): Promise<Teacher> {
+    const user = await this.teachers.create(data);
+    return this.teachers.findByPk(user.id);
+  }
 
-    async update(id: number, data: UpdateTeacherDto) {
-        return this.teachers.update(data, {where: {id}});
-    }
+  async delete(id: number): Promise<number> {
+    return this.teachers.destroy({ where: { id } })
+      .then(() => id);
+  }
+
+  async update(id: number, data: UpdateTeacherDto) {
+    await this.teachers.update(data, { where: { id } });
+    return this.teachers.findByPk(id);
+  }
 }

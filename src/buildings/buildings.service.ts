@@ -30,8 +30,7 @@ export class BuildingsService {
   }
 
   async create(data: CreateBuildingDto): Promise<Building> {
-    const building = new Building(data);
-    return building.save();
+    return this.buildings.create(data);
   }
 
   async delete(id: number): Promise<number> {
@@ -40,6 +39,7 @@ export class BuildingsService {
   }
 
   async update(id: number, data: UpdateBuildingDto) {
-    return this.buildings.update(data, { where: { id } });
+    await this.buildings.update(data, { where: { id } });
+    return this.buildings.findByPk(id);
   }
 }

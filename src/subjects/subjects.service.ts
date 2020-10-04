@@ -7,35 +7,37 @@ import { UpdateSubjectDto } from './dto/update-subject.dto';
 @Injectable()
 export class SubjectsService {
 
-    constructor(
-        @InjectModel(Subject)
-        private lessons: typeof Subject,
-    ) {}
+  constructor(
+    @InjectModel(Subject)
+    private subject: typeof Subject,
+  ) {
+  }
 
-    findAll(): Promise<Subject[]> {
-        return this.lessons.findAll().all();
-    }
+  findAll(): Promise<Subject[]> {
+    return this.subject.findAll().all();
+  }
 
-    async findOne(id: number) {
-        const lesson = await this.lessons.findByPk(id);
-        if (lesson) {
-            return lesson;
-        } else {
-            throw new NotFoundException('Урок не найден');
-        }
+  async findOne(id: number) {
+    const lesson = await this.subject.findByPk(id);
+    if (lesson) {
+      return lesson;
+    } else {
+      throw new NotFoundException('Урок не найден');
     }
+  }
 
-    async create(data: CreateSubjectDto): Promise<Subject> {
-        const lesson = new Subject(data);
-        return lesson.save();
-    }
+  async create(data: CreateSubjectDto): Promise<Subject> {
+    const lesson = await this.subject.create(data);
+    return this.subject.findByPk(lesson.id);
+  }
 
-    async delete(id: number): Promise<number> {
-        return this.lessons.destroy({ where: { id } })
-          .then(() => id);
-    }
+  async delete(id: number): Promise<number> {
+    return this.subject.destroy({ where: { id } })
+      .then(() => id);
+  }
 
-    async update(id: number, data: UpdateSubjectDto) {
-        return this.lessons.update(data, { where: { id } });
-    }
+  async update(id: number, data: UpdateSubjectDto) {
+    await this.subject.update(data, { where: { id } });
+    return this.subject.findByPk(id);
+  }
 }
