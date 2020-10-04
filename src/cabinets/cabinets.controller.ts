@@ -1,9 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { CabinetsService } from './cabinets.service';
 import { Cabinet } from '../models/cabinet.model';
 import IncludeFactory from '../utils/IncludeFactory';
 import { CreateCabinetDto } from './dto/create-cabinet.dto';
 import { UpdateCabinetDto } from './dto/update-cabinet.dto';
+import { Roles } from '../auth/roles.decorator';
+import { JwtGuard } from '../auth/jwt.guard';
+import { RolesGuard } from '../auth/roles.guard';
 
 @Controller('api/cabinets')
 export class CabinetsController {
@@ -26,6 +29,8 @@ export class CabinetsController {
     return this.cabinetsService.findOne(teacherId, withEntities);
   }
 
+  @Roles('admin')
+  @UseGuards(JwtGuard, RolesGuard)
   @Post()
   addCabinet(
     @Body() cabinetDto: CreateCabinetDto,
@@ -33,6 +38,8 @@ export class CabinetsController {
     return this.cabinetsService.create(cabinetDto);
   }
 
+  @Roles('admin')
+  @UseGuards(JwtGuard, RolesGuard)
   @Patch(':id')
   updateCabinet(
     @Param('id') id: number,
@@ -41,6 +48,8 @@ export class CabinetsController {
     return this.cabinetsService.update(id, cabinetDto);
   }
 
+  @Roles('admin')
+  @UseGuards(JwtGuard, RolesGuard)
   @Delete(':id')
   deleteCabinet(@Param('id') id: number) {
     return this.cabinetsService.delete(id);

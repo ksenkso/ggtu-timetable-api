@@ -3,52 +3,45 @@ import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { JwtGuard } from './jwt.guard';
 import { LocalGuard } from './local.guard';
+import { Roles } from './roles.decorator';
+import { RolesGuard } from './roles.guard';
 
 @Controller('api/auth')
 export class AuthController {
 
-    constructor(
-        private readonly authService: AuthService,
-    ) {}
+  constructor(
+    private readonly authService: AuthService,
+  ) {
+  }
 
-    @Post()
-    async signUp(@Req() req: Request) {
-        const user = await this.authService.signUp(req);
-        return user.withoutPassword();
-    }
+  @Roles('admin')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Post()
+  async signUp(@Req() req: Request) {
+    const user = await this.authService.signUp(req);
+    return user.withoutPassword();
+  }
 
-    @UseGuards(LocalGuard)
-    @Post('login')
-    async login(@Req() req) {
-        return this.authService.login(req.user);
-    }
+  @UseGuards(LocalGuard)
+  @Post('login')
+  async login(@Req() req) {
+    return this.authService.login(req.user);
+  }
 
-    @UseGuards(JwtGuard)
-    @Get('profile')
-    getProfile(@Req() req) {
-        return req.user;
-    }
+  @UseGuards(JwtGuard)
+  @Get('profile')
+  getProfile(@Req() req) {
+    return req.user;
+  }
 
-    @Get('refresh')
-    async refresh(
-        @Req() req: Request,
-        @Query('refreshToken') refreshToken: string
-    ) {
-        // console.log(refreshToken);
-        return this.authService.refresh(
-          req.header('Authorization').slice('Bearer '.length),
-          refreshToken
-      )
-    }
-
-
-    /*@UseGuards(JwtGuard)
-    @Roles('admin')
-    @Delete()
-    async deleteUser(
-        @Param('username') username: string,
-        @Req() req: Request,
-    ) {
-        return this.usersService.delete(username);
-    }*/
+  @Get('refresh')
+  async refresh(
+    @Req() req: Request,
+    @Query('refreshToken') refreshToken: string,
+  ) {
+    return this.authService.refresh(
+      req.header('Authorization').slice('Bearer '.length),
+      refreshToken,
+    );
+  }
 }

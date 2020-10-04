@@ -1,4 +1,4 @@
-import { BeforeSave, BelongsTo, BelongsToMany, Column, ForeignKey, Model, Table } from 'sequelize-typescript';
+import { BeforeSave, BelongsTo, BelongsToMany, Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
 import * as bcrypt from 'bcrypt';
 import { Role } from './role.model';
 import { UserRole } from './user-role.model';
@@ -23,6 +23,12 @@ export class User extends Model<User> {
   @Column
   password: string;
 
+  @Column(DataType.VIRTUAL)
+  get roles(): string[] {
+    const roles = this.getDataValue('userRoles');
+    return roles ? roles.map(role => role.name) : [];
+  }
+
   @ForeignKey(() => Faculty)
   @Column
   facultyId: number;
@@ -31,7 +37,7 @@ export class User extends Model<User> {
   faculty: Faculty;
 
   @BelongsToMany(() => Role, () => UserRole)
-  roles: Role[];
+  userRoles: Role[];
 
   @BeforeSave
   static async updatePassword(model: User) {
@@ -53,5 +59,14 @@ export class User extends Model<User> {
     const json = this.toJSON() as any;
     delete json.password;
     return json;
+  }
+
+  toJSON(): object {
+    const fields: any = super.toJSON();
+    delete fields.password;
+    if (fields.userRoles) {
+      delete fields.userRoles;
+    }
+    return fields;
   }
 }

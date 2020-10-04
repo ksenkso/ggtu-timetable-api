@@ -5,8 +5,6 @@ import { AuthModule } from './auth/auth.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
-import { APP_GUARD } from '@nestjs/core';
-import { RolesGuard } from './auth/roles.guard';
 import { TeachersModule } from './teachers/teachers.module';
 import { SubjectsModule } from './subjects/subjects.module';
 import { GroupsModule } from './groups/groups.module';
@@ -49,10 +47,6 @@ import { SpecializationsModule } from './specializations/specializations.module'
   controllers: [AppController],
   providers: [
       AppService,
-      {
-          provide: APP_GUARD,
-          useClass: RolesGuard,
-      }
   ],
 })
 export class AppModule {}
