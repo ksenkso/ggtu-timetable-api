@@ -34,7 +34,7 @@ export class AuthController {
         @Req() req: Request,
         @Query('refreshToken') refreshToken: string
     ) {
-        console.log(refreshToken);
+        // console.log(refreshToken);
         return this.authService.refresh(
           req.header('Authorization').slice('Bearer '.length),
           refreshToken
