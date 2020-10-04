@@ -2,11 +2,13 @@ import { BelongsToMany, Column, Model, Table } from 'sequelize-typescript';
 import { User } from './user.model';
 import { UserRole } from './user-role.model';
 
-@Table
+@Table({
+  timestamps: false,
+})
 export class Role extends Model<Role> {
-    @Column
-    name: string
+  @Column
+  name: string;
 
-    @BelongsToMany(() => User, () => UserRole)
-    users: User[]
+  @BelongsToMany(() => User, () => UserRole)
+  users: User[];
 }
