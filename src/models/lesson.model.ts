@@ -97,13 +97,13 @@ export class Lesson extends Model<Lesson> {
   @Column(DataType.VIRTUAL)
   week: Week;
 
-  @Column
+  @Column({defaultValue: 0})
   index: number;
 
-  @Column
+  @Column({defaultValue: TimetableEntryType.Lecture})
   type: TimetableEntryType;
 
-  @Column
+  @Column({defaultValue: true})
   isRegular: boolean;
 
   @ForeignKey(() => Subject)
