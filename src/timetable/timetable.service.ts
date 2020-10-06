@@ -4,7 +4,7 @@ import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { TeacherTimetable } from '../models/teacher-timetable.model';
 import { Teacher } from '../models/teacher.model';
-import { FindOptions, WhereOptions } from 'sequelize';
+import { FindOptions, IncludeOptions, WhereOptions } from 'sequelize';
 import { Subject } from '../models/subject.model';
 import { Cabinet } from '../models/cabinet.model';
 import { Building } from '../models/building.model';
@@ -15,6 +15,7 @@ import { Group } from '../models/group.model';
 import { PatchTimetable } from '../models/patch-timetable';
 import { CreatePatchDto } from '../patches/dto/create-patch.dto';
 import { UpdatePatchDto } from '../patches/dto/update-patch.dto';
+
 export type LessonForeignKey = 'lessonId' | 'groupId' | 'cabinetId';
 
 interface ForLessonPropIdParams {
@@ -27,17 +28,19 @@ interface ForLessonPropIdParams {
 @Injectable()
 export class TimetablesService {
 
-  static defaultRelations = [
-    { model: Teacher, through: { attributes: [] } },
-    { model: Subject },
-    {
-      model: Cabinet, include: [
-        { model: Building },
-      ],
-    },
-    { model: RegularTimetable },
-    { model: PatchTimetable },
-  ];
+  static get defaultRelations() {
+    return [
+      { model: Teacher, through: { attributes: [] } },
+      { model: Subject },
+      {
+        model: Cabinet, include: [
+          { model: Building },
+        ],
+      },
+      { model: RegularTimetable },
+      { model: PatchTimetable },
+    ];
+  };
 
   constructor(
     @InjectModel(Lesson)
@@ -143,7 +146,11 @@ export class TimetablesService {
 
   private static setWeekOption(week: Week, options: FindOptions) {
     if (week === Week.Top || week === Week.Bottom) {
-      options.where['week'] = week;
+      const index = options.include.findIndex(option => (option as IncludeOptions).model === RegularTimetable);
+      if (index !== -1) {
+        options.include.splice(index, 1);
+      }
+      options.include.push({ model: RegularTimetable, where: { week } });
     }
   }
 
