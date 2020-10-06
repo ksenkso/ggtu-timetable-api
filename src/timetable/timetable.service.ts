@@ -59,7 +59,7 @@ export class TimetablesService {
   }
 
   async findOne(id: number) {
-    const lesson = this.lesson.findByPk(id, {
+    const lesson = await this.lesson.findByPk(id, {
       include: TimetablesService.defaultRelations,
     });
     if (lesson) {
@@ -103,10 +103,10 @@ export class TimetablesService {
         await this.checkAccess(user, data.groupId);
       }
       if (data.teacherIds && data.teacherIds.length) {
-        await this.teacherTimetable.destroy({ where: { timetableEntryId: id } });
+        await this.teacherTimetable.destroy({ where: { lessonId: id } });
         await this.teacherTimetable.bulkCreate(data.teacherIds.map(teacherId => ({
           teacherId,
-          timetableEntryId: id,
+          lessonId: id,
         })));
       }
       delete data.teacherIds;
