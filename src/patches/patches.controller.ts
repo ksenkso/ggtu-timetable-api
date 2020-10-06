@@ -7,6 +7,8 @@ import { User } from '../models/user.model';
 import { CreatePatchDto } from './dto/create-patch.dto';
 import { JwtGuard } from '../auth/jwt.guard';
 import { UpdatePatchDto } from './dto/update-patch.dto';
+import { Roles } from '../auth/roles.decorator';
+import { RolesGuard } from '../auth/roles.guard';
 
 @Controller('api/patches')
 export class PatchesController {
@@ -24,7 +26,8 @@ export class PatchesController {
     return this.timetablesService.findOne(id);
   }
 
-  @UseGuards(JwtGuard)
+  @Roles('admin')
+  @UseGuards(JwtGuard, RolesGuard)
   @Post()
   addTimetableEntry(
     @Req() request: Request,
@@ -34,6 +37,8 @@ export class PatchesController {
     return this.timetablesService.create(request.user as User, patchDto);
   }
 
+  @Roles('admin')
+  @UseGuards(JwtGuard, RolesGuard)
   @Patch(':id')
   updatePatch(
     @Req() request: Request,
@@ -42,7 +47,9 @@ export class PatchesController {
   ) {
     return this.timetablesService.update(request.user as User, id, patchDto);
   }
-  @UseGuards(JwtGuard)
+
+  @Roles('admin')
+  @UseGuards(JwtGuard, RolesGuard)
   @Delete(':id')
   deleteLesson(
     @Req() request: Request,
