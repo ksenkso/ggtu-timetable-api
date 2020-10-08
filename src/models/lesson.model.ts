@@ -1,5 +1,6 @@
 import {
-  AfterSave,
+  AfterCreate,
+  BeforeUpdate,
   BelongsTo,
   BelongsToMany,
   Column,
@@ -28,7 +29,10 @@ export enum TimetableEntryType {
 @Table({ timestamps: false })
 export class Lesson extends Model<Lesson> {
 
-  @AfterSave
+  // use these hooks to trigger relations updates even if
+  // the lesson itself has not been changed
+  @BeforeUpdate
+  @AfterCreate
   static async syncDate(instance: Lesson, options: any) {
     console.log(options);
     console.log('running after save');
