@@ -1,6 +1,5 @@
 import { TimetableEntryType } from '../../models/lesson.model';
-import { IsArray, IsIn, IsOptional, Max, Min } from 'class-validator';
-import { Day, Week } from '../../models/regular-timetable';
+import { ArrayMinSize, IsArray, IsDateString, IsIn, IsOptional, Max, Min } from 'class-validator';
 
 export class UpdatePatchDto {
 
@@ -14,17 +13,10 @@ export class UpdatePatchDto {
     @IsOptional()
     cabinetId?: number;
 
-    @IsOptional()
-    groupId?: number;
-
-    @IsOptional()
-    @Min(0)
-    @Max(6)
-    day?: Day;
-
-    @IsOptional()
-    @IsIn([Week.Top, Week.Bottom])
-    week?: Week;
+    @IsArray()
+    @ArrayMinSize(1)
+    @IsDateString({ each: true })
+    dates: string[];
 
     @IsOptional()
     @Min(0)

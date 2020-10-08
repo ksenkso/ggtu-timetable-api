@@ -101,10 +101,6 @@ export class TimetablesService {
     const lesson = await this.lesson.findByPk(id);
     if (lesson) {
       await this.checkAccess(user, lesson.groupId);
-      if (data.groupId) {
-        // check access for user-provided groupId
-        await this.checkAccess(user, data.groupId);
-      }
       if (data.teacherIds && data.teacherIds.length) {
         await this.teacherTimetable.destroy({ where: { lessonId: id } });
         await this.teacherTimetable.bulkCreate(data.teacherIds.map(teacherId => ({
