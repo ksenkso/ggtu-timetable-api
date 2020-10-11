@@ -6,6 +6,8 @@ import { User } from '../models/user.model';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { JwtGuard } from '../auth/jwt.guard';
+import { Roles } from '../auth/roles.decorator';
+import { RolesGuard } from '../auth/roles.guard';
 
 @Controller('api/timetable')
 export class TimetableController {
@@ -34,13 +36,15 @@ export class TimetableController {
     return this.timetableService.create(request.user as User, lessonDto);
   }
 
-  @UseGuards(JwtGuard)
+  @Roles('admin')
+  @UseGuards(JwtGuard, RolesGuard)
   @Patch(':id')
   updateLesson(
     @Req() request: Request,
     @Param('id') id: number,
     @Body() lessonDto: UpdateLessonDto,
   ) {
+    console.log(typeof lessonDto.type);
     return this.timetableService.update(request.user as User, id, lessonDto);
   }
 
