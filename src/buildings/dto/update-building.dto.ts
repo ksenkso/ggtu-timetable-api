@@ -1,3 +1,6 @@
+import { IsOptional } from 'class-validator';
+
 export class UpdateBuildingDto {
-    name: string;
+    @IsOptional()
+    name?: string;
 }

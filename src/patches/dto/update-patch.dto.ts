@@ -13,6 +13,8 @@ export class UpdatePatchDto {
     @IsOptional()
     cabinetId?: number;
 
+
+    @IsOptional()
     @IsArray()
     @ArrayMinSize(1)
     @IsDateString({ each: true })

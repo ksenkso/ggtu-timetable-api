@@ -1,4 +1,8 @@
+import { IsOptional } from 'class-validator';
+
 export class UpdateSpecializationDto {
-    name?: string;
-    code?: string;
+  @IsOptional()
+  name?: string;
+  @IsOptional()
+  code?: string;
 }

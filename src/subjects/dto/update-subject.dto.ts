@@ -1,3 +1,6 @@
+import { IsOptional } from 'class-validator';
+
 export class UpdateSubjectDto {
-    name: string;
+  @IsOptional()
+  name?: string;
 }
