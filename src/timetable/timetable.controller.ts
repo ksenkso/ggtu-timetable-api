@@ -72,19 +72,19 @@ export class TimetableController {
     return this.timetableService.forLessonPropId({ key: 'groupId', id: groupId, week: week });
   }
 
-  @Get('subject/:lessonId')
+  @Get('subject/:subjectId')
   async getLessonTimetable(
-    @Param('lessonId') lessonId: number,
+    @Param('subjectId') subjectId: number,
   ) {
-    return this.timetableService.forLessonPropId({ key: 'lessonId', id: lessonId });
+    return this.timetableService.forLessonPropId({ key: 'subjectId', id: subjectId });
   }
 
-  @Get('subject/:lessonId/:week')
+  @Get('subject/:subjectId/:week')
   async getLessonTimetableByWeek(
-    @Param('lessonId') lessonId: number,
+    @Param('subjectId') subjectId: number,
     @Param('week') week: number,
   ) {
-    return this.timetableService.forLessonPropId({ key: 'lessonId', id: lessonId, week: week });
+    return this.timetableService.forLessonPropId({ key: 'subjectId', id: subjectId, week: week });
   }
 
   @Get('cabinet/:cabinetId')

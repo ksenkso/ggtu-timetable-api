@@ -1,6 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { Lesson } from '../models/lesson.model';
-import { Week } from '../models/regular-timetable';
 import { TimetablesService } from '../timetable/timetable.service';
 import { Request } from 'express';
 import { User } from '../models/user.model';
@@ -17,19 +16,26 @@ export class PatchesController {
   }
 
   @Get()
-  getAll(): Promise<Lesson[]> {
-    return this.timetablesService.findAll({ isRegular: false });
+  getAll(
+    @Query('from') from: string,
+    @Query('to') to: string
+  ): Promise<Lesson[]> {
+    const options = {isRegular: false};
+    if (from && to) {
+      options['range'] = [from, to]
+    }
+    return this.timetablesService.findAll(options);
   }
 
   @Get(':id')
-  getTimetableEntry(@Param('id') id: number): Promise<Lesson> {
+  getPatch(@Param('id') id: number): Promise<Lesson> {
     return this.timetablesService.findOne(id);
   }
 
   @Roles('admin')
   @UseGuards(JwtGuard, RolesGuard)
   @Post()
-  addTimetableEntry(
+  addPatch(
     @Req() request: Request,
     @Body() patchDto: CreatePatchDto,
   ) {
@@ -51,7 +57,7 @@ export class PatchesController {
   @Roles('admin')
   @UseGuards(JwtGuard, RolesGuard)
   @Delete(':id')
-  deleteLesson(
+  deletePatch(
     @Req() request: Request,
     @Param('id') id: number,
   ) {
@@ -65,27 +71,11 @@ export class PatchesController {
     return this.timetablesService.forLessonPropId({ key: 'groupId', id: groupId, isRegular: false });
   }
 
-  @Get('group/:groupId/:week')
-  async getGroupPatchesByWeek(
-    @Param('groupId') groupId: string,
-    @Param('week') week: string,
-  ) {
-    return this.timetablesService.forLessonPropId({ key: 'groupId', id: +groupId, week: +week, isRegular: false });
-  }
-
-  @Get('subject/:lessonId')
+  @Get('subject/:subjectId')
   async getLessonPatches(
-    @Param('lessonId') lessonId: number,
+    @Param('subjectId') subjectId: number,
   ) {
-    return this.timetablesService.forLessonPropId({ key: 'lessonId', id: lessonId, isRegular: false });
-  }
-
-  @Get('subject/:lessonId/:week')
-  async getLessonPatchesByWeek(
-    @Param('lessonId') lessonId: number,
-    @Param('week') week: Week,
-  ) {
-    return this.timetablesService.forLessonPropId({ key: 'lessonId', id: lessonId, week: week, isRegular: false });
+    return this.timetablesService.forLessonPropId({ key: 'subjectId', id: subjectId, isRegular: false });
   }
 
   @Get('cabinet/:cabinetId')
@@ -95,14 +85,6 @@ export class PatchesController {
     return this.timetablesService.forLessonPropId({ key: 'cabinetId', id: cabinetId, isRegular: false });
   }
 
-  @Get('cabinet/:cabinetId/:week')
-  async getCabinetPatchesByWeek(
-    @Param('cabinetId') cabinetId: number,
-    @Param('week') week: Week,
-  ) {
-    return this.timetablesService.forLessonPropId({ key: 'cabinetId', id: cabinetId, week: week, isRegular: false });
-  }
-
   @Get('teacher/:teacherId')
   async getPatchesForTeacher(
     @Param('teacherId') teacherId: number,
@@ -110,11 +92,4 @@ export class PatchesController {
     return this.timetablesService.forTeacher(teacherId, false);
   }
 
-  @Get('teacher/:teacherId/:week')
-  async getPatchesForTeacherByWeek(
-    @Param('teacherId') teacherId: number,
-    @Param('week') week: Week,
-  ) {
-    return this.timetablesService.forTeacher(teacherId, false, week);
-  }
 }

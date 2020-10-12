@@ -5,7 +5,7 @@ import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { TeacherTimetable } from '../models/teacher-timetable.model';
 import { Teacher } from '../models/teacher.model';
 import * as sequelize from 'sequelize';
-import { FindOptions, IncludeOptions, Op, WhereOptions } from 'sequelize';
+import { FindOptions, IncludeOptions, Op } from 'sequelize';
 import { Subject } from '../models/subject.model';
 import { Cabinet } from '../models/cabinet.model';
 import { Building } from '../models/building.model';
@@ -17,19 +17,20 @@ import { PatchTimetable } from '../models/patch-timetable';
 import { CreatePatchDto } from '../patches/dto/create-patch.dto';
 import { UpdatePatchDto } from '../patches/dto/update-patch.dto';
 
-export type LessonForeignKey = 'lessonId' | 'groupId' | 'cabinetId';
+export type LessonForeignKey = 'subjectId' | 'groupId' | 'cabinetId';
 
 interface ForLessonPropIdParams {
   key: LessonForeignKey;
   id: number;
   week?: Week;
   isRegular?: boolean;
+  range?: [Date, Date];
 }
 
 @Injectable()
 export class TimetablesService {
 
-  static get defaultRelations() {
+  static get defaultRelations(): IncludeOptions[] {
     return [
       { model: Teacher, through: { attributes: [] } },
       { model: Subject },
@@ -55,11 +56,23 @@ export class TimetablesService {
   ) {
   }
 
-  findAll(where?: WhereOptions): Promise<Lesson[]> {
-    return this.lesson.findAll({
+  findAll({ isRegular, range}: {isRegular: boolean, range?: [string, string]} = {isRegular: true}): Promise<Lesson[]> {
+    const options = {
       include: TimetablesService.defaultRelations,
-      where,
-    }).all();
+      where: { isRegular },
+    };
+    if (range) {
+      options.include.pop();
+      options.include.push({
+        model: PatchTimetable,
+        where: {
+          date: {
+            [Op.between]: range,
+          },
+        },
+      });
+    }
+    return this.lesson.findAll(options).all();
   }
 
   async findOne(id: number) {
@@ -124,20 +137,20 @@ export class TimetablesService {
     const options: FindOptions = {
       where: {
         [Op.and]: [
-          {isRegular},
+          { isRegular },
           // MAY CHANGE IN FUTURE
           // this col is from the raw sql that is sequelize outputs when querying lessons
-          sequelize.literal('`teachers->TeacherTimetable`.`teacherId` = ' + teacherId)
-        ]
+          sequelize.literal('`teachers->TeacherTimetable`.`teacherId` = ' + teacherId),
+        ],
       },
-      include: TimetablesService.defaultRelations
+      include: TimetablesService.defaultRelations,
     };
     TimetablesService.setWeekOption(week, options);
     const lessons = await this.lesson.findAll(options);
     return TimetablesService.formatTimetable(lessons, isRegular, week);
   }
 
-  async forLessonPropId({ key, id, week, isRegular = true }: ForLessonPropIdParams): Promise<any> {
+  async forLessonPropId({ key, id, week, range, isRegular = true }: ForLessonPropIdParams): Promise<any> {
     const options: FindOptions = {
       where: {
         [key]: id,
@@ -145,6 +158,11 @@ export class TimetablesService {
       },
       include: TimetablesService.defaultRelations,
     };
+    if (range) {
+      options.where['date'] = {
+        [Op.between]: range,
+      };
+    }
     TimetablesService.setWeekOption(week, options);
     const lessons = (await this.lesson.findAll(options));
     return TimetablesService.formatTimetable(lessons, isRegular, week);
