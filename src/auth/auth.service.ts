@@ -31,7 +31,14 @@ export class AuthService {
 
   async refresh(accessToken: string, refreshToken?: string) {
     const accessPayload = this.jwtService.verify(accessToken, { ignoreExpiration: true }) as any;
-    const refreshPayload = this.jwtService.verify(refreshToken) as any;
+    let refreshPayload
+    try {
+      refreshPayload = this.jwtService.verify(refreshToken) as any;
+    } catch (err) {
+      if (err.name === 'TokenExpiredError') {
+        throw new UnauthorizedException('Refresh token has expired');
+      }
+    }
     if (accessPayload.sub !== refreshPayload.sub) {
       throw new UnauthorizedException({
         name: 'InvalidSubjectError',
