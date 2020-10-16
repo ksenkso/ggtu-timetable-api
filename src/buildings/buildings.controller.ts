@@ -32,7 +32,6 @@ export class BuildingsController {
 
   @Roles('admin')
   @UseGuards(JwtGuard, RolesGuard)
-
   @Patch(':id')
   updateBuilding(
     @Param('id') id: number,

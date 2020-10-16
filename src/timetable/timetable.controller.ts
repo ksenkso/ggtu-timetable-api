@@ -27,7 +27,8 @@ export class TimetableController {
     return this.timetableService.findOne(teacherId);
   }
 
-  @UseGuards(JwtGuard)
+  @Roles('admin')
+  @UseGuards(JwtGuard, RolesGuard)
   @Post()
   addLesson(
     @Req() request: Request,
@@ -48,7 +49,8 @@ export class TimetableController {
     return this.timetableService.update(request.user as User, id, lessonDto);
   }
 
-  @UseGuards(JwtGuard)
+  @Roles('admin')
+  @UseGuards(JwtGuard, RolesGuard)
   @Delete(':id')
   deleteTimetableEntry(
     @Req() request: Request,
