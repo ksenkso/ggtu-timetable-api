@@ -221,15 +221,13 @@ export class TimetablesService {
          * then there is no lesson defined, so only set an id;
          * increment expected index every iteration, go to next lesson only if indices are equal.
          */
-        let expectedSerialNumber = 0, lessonIndex = 0;
+        let lessonIndex = 0;
         while (lessonIndex < day.length) {
           // current lesson is not the lesson we are looking for, so there is no lesson for current index
-          if ((day[lessonIndex] as Lesson).index !== expectedSerialNumber) {
-            day.splice(expectedSerialNumber, 0, null);
-          } else {
-            lessonIndex++;
+          if ((day[lessonIndex] as Lesson).index !== lessonIndex) {
+            day.splice(lessonIndex, 0, null);
           }
-          expectedSerialNumber++;
+          lessonIndex++;
         }
       }
     }
