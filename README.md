@@ -7,6 +7,7 @@ This repo is no longer maintained
 ## Description
 
 This is an API server for a timetable app made for the [GGTU](https://ggtu.ru/).
+Required environment variables are presented in `.env.example`.
 
 ## Features
 
